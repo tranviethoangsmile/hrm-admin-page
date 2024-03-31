@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { CWidgetStatsD, CRow, CCol } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cibLinkedin, cibTwitter, cilCalendar, cilUser } from "@coreui/icons";
+import {
+  cilRestaurant,
+  cilFingerprint,
+  cilUser,
+  cilQrCode,
+} from "@coreui/icons";
 import { BASE_URL, VERSION, V1, API, USER_URL } from "../../../constants";
 import axios from "axios";
 const WidgetsBrand = ({ users }) => {
@@ -22,11 +27,11 @@ const WidgetsBrand = ({ users }) => {
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsD
           icon={
-            <CIcon icon={cibTwitter} height={52} className="my-4 text-white" />
+            <CIcon icon={cilQrCode} height={52} className="my-4 text-white" />
           }
           values={[
-            { title: "followers", value: "973k" },
-            { title: "tweets", value: "1.792" },
+            { title: "Yesterday", value: users },
+            { title: "rest", value: "1.792" },
           ]}
           style={{
             "--cui-card-cap-bg": "#00aced",
@@ -36,7 +41,11 @@ const WidgetsBrand = ({ users }) => {
       <CCol sm={6} xl={4} xxl={3}>
         <CWidgetStatsD
           icon={
-            <CIcon icon={cibLinkedin} height={52} className="my-4 text-white" />
+            <CIcon
+              icon={cilRestaurant}
+              height={52}
+              className="my-4 text-white"
+            />
           }
           values={[
             { title: "contacts", value: "500" },
@@ -51,7 +60,11 @@ const WidgetsBrand = ({ users }) => {
         <CWidgetStatsD
           color="warning"
           icon={
-            <CIcon icon={cilCalendar} height={52} className="my-4 text-white" />
+            <CIcon
+              icon={cilFingerprint}
+              height={52}
+              className="my-4 text-white"
+            />
           }
           values={[
             { title: "events", value: "12+" },

@@ -28,6 +28,7 @@ import {
   CHECKIN,
   GET_CHECKIN_OF_DATE,
   USER_URL,
+  FIND_ALL_USER_WITH_FIELD,
 } from "../../constants";
 import WidgetsBrand from "../dashboard/widgets/WidgetsBrand";
 const Dashboard = () => {
@@ -45,8 +46,11 @@ const Dashboard = () => {
   }, [startDate]);
   const getAllUser = async () => {
     try {
-      const response = await axios.get(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
+      const response = await axios.post(
+        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}${FIND_ALL_USER_WITH_FIELD}`,
+        {
+          position: userData?.position,
+        }
       );
       if (response?.data?.success) {
         setUsers(response?.data?.data.length);
