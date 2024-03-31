@@ -61,14 +61,14 @@ const Login = () => {
     return isValid;
   };
 
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn");
   useEffect(() => {
-    const isLoggedIn = sessionStorage.getItem("isLoggedIn");
     if (isLoggedIn) {
       navigate("/dashboard");
     }
-  }, []);
+  }, [isLoggedIn]);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
     const user = {
       user_name: user_name,
       password: password,
@@ -81,13 +81,13 @@ const Login = () => {
             ...user,
           }
         );
-        console.log(respone);
         if (!respone?.data?.success) {
           setVisibleAlert(!visibleAlert);
           setAlertMessage(respone?.data?.message);
         } else {
           sessionStorage.setItem("isLoggedIn", true);
-          console.log(respone?.data?.data);
+          sessionStorage.setItem("token", respone?.data?.token);
+          sessionStorage.setItem("userIF", JSON.stringify(respone?.data?.data));
           navigate("/dashboard");
         }
       } catch (error) {
