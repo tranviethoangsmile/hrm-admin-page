@@ -1,0 +1,23 @@
+// export const BASE_URL = "http://192.168.0.106";
+// export const PORT = ":4000";
+
+export const BASE_URL = "http://60.75.209.140";
+export const PORT = ":8000";
+export const USER_URL = "/users";
+export const DEPARTMENT = "/departments";
+export const LOGIN_URL = "/login";
+export const ORDER_URL = "/order";
+export const VERSION = "/version";
+export const V1 = "/v1";
+export const API = "/api";
+export const CHAT = "/chat";
+export const CHECKIN = "/checkin";
+export const CREATE = "/create";
+export const SEARCH = "/search";
+export const UPLOAD_AVATAR = "/upload-avatar";
+export const INFORMATION = "/information";
+export const GET_INFOR_OF_USER = "/getinforofuser";
+export const GET_INFOR_BY_ID = "/getinforbyid";
+export const GET_ALL_BY_FIELD = "/getallinforbyfield";
+export const DELETE_INFORMATION_BY_ID = "/deleteinformationbyid";
+export const GET_CHECKIN_OF_DATE = "/getcheckinofdate";
