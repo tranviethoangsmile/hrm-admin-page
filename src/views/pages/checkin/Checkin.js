@@ -12,6 +12,7 @@ import socket from "../../../scoket.config/socketio";
 const Checkin = () => {
   const [qrValue, setQrValue] = useState("");
   socket.on("qrReset", (value) => {
+    console.log(value);
     setQrValue(value);
   });
   return (
