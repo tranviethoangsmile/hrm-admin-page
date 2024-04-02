@@ -5,7 +5,18 @@ import {
   AppFooter,
   AppHeader,
 } from "../components/index";
+import { Link, useNavigate } from "react-router-dom";
+
 const DefaultLayout = () => {
+  const navigate = useNavigate();
+
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/login");
+    }
+  }, []);
+
   return (
     <div>
       <AppSidebar />

@@ -3,6 +3,8 @@ import axios from "axios";
 import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Link, useNavigate } from "react-router-dom";
+
 import {
   CAvatar,
   CCard,
@@ -31,35 +33,31 @@ import {
   FIND_ALL_USER_WITH_FIELD,
 } from "../../constants";
 import WidgetsBrand from "../dashboard/widgets/WidgetsBrand";
+
 const Dashboard = () => {
-  const today = moment().format("YYYY-MM-DD");
-  const subtractToday = moment(today).subtract(1, "day").format("YYYY-MM-DD");
-  const [startDate, setStartDate] = useState(subtractToday);
-  const [checkinData, setCheckinData] = useState([]);
-  const [dataNotExist, setDataNotExist] = useState("");
-  const [users, setUsers] = useState(0);
+  const navigate = useNavigate();
 
   const userData = JSON.parse(sessionStorage.getItem("userIF"));
+  const today = moment().format("YYYY-MM-DD");
+  const [startDate, setStartDate] = useState(
+    moment(today).subtract(1, "day").format("YYYY-MM-DD")
+  );
+  const [checkinData, setCheckinData] = useState([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [isDataEmpty, setIsDataEmpty] = useState(false);
+
   useEffect(() => {
-    getUserCheckinOfDate();
-    getAllUser();
-  }, [startDate]);
-  const getAllUser = async () => {
-    try {
-      const response = await axios.post(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}${FIND_ALL_USER_WITH_FIELD}`,
-        {
-          position: userData?.position,
-        }
-      );
-      if (response?.data?.success) {
-        setUsers(response?.data?.data.length);
-      }
-    } catch (error) {
-      console.log(error);
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+    console.log(isLoggedIn);
+    if (!isLoggedIn) {
+      navigate("/login");
+    } else {
+      getUserCheckinOfDate();
     }
-  };
+  }, [startDate]);
+
   const getUserCheckinOfDate = async () => {
+    setIsDataLoaded(false);
     const field = {
       date: startDate,
       position: userData?.position,
@@ -72,29 +70,30 @@ const Dashboard = () => {
         }
       );
       if (response?.data?.success) {
-        console.log(response.data.data);
         setCheckinData(response?.data?.data);
+        setIsDataEmpty(response?.data?.data.length === 0);
       } else {
-        setDataNotExist("data not exists");
+        setIsDataEmpty(true);
       }
+    } catch (error) {
+      console.log(error);
+    }
+    setIsDataLoaded(true);
+  };
+
+  const handleChangeDate = async (date) => {
+    try {
+      const dateTarget = moment(date).format("YYYY-MM-DD");
+      setStartDate(dateTarget);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleChangeDate = async (date) => {
-    try {
-      const dateTaget = moment(date).format("YYYY-MM-DD");
-      setStartDate(dateTaget);
-      getUserCheckinOfDate();
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <>
       <CContainer>
-        <WidgetsBrand users={users} />
+        <WidgetsBrand />
         <CCard className="mb-4 mt-4">
           <CCardHeader>
             <CRow>
@@ -106,73 +105,77 @@ const Dashboard = () => {
               </CCol>
               <CCol>
                 <DatePicker
-                  selected={startDate}
+                  selected={new Date(startDate)}
                   onChange={(date) => handleChangeDate(date)}
-                  dateFormat="YYYY-MM-dd"
+                  dateFormat="yyyy-MM-dd"
                 />
               </CCol>
             </CRow>
           </CCardHeader>
 
           <CCardBody>
-            <CTable
-              align="middle"
-              className="mb-0 border text-center"
-              hover
-              responsive
-            >
-              <CTableHead className="text-nowrap">
-                <CTableRow>
-                  <CTableHeaderCell className="bg-body-tertiary">
-                    User
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="bg-body-tertiary text-center">
-                    Department
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="bg-body-tertiary">
-                    Work time
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="bg-body-tertiary">
-                    Over time
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="bg-body-tertiary">
-                    Weekend
-                  </CTableHeaderCell>
-                  <CTableHeaderCell className="bg-body-tertiary">
-                    Shift
-                  </CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                {checkinData.map((item, index) => (
-                  <CTableRow key={index}>
-                    <CTableDataCell>
-                      <div>{item.user?.name}</div>
-                      <div className="small text-body-secondary text-nowrap">
-                        <span>{item.user?.employee_id}</span>
-                      </div>
-                    </CTableDataCell>
-                    <CTableDataCell className="text-center">
-                      <div>{item.user?.department?.name}</div>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <div>{item.work_time}</div>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <div>{item.over_time}</div>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <div className={item.is_weekend ? "bg-primary" : ""}>
-                        {item.is_weekend ? "Yes" : "No"}
-                      </div>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <div>{item.work_shift}</div>
-                    </CTableDataCell>
+            {isDataLoaded && isDataEmpty ? (
+              <div className="text-center">Không có dữ liệu</div>
+            ) : (
+              <CTable
+                align="middle"
+                className="mb-0 border text-center"
+                hover
+                responsive
+              >
+                <CTableHead className="text-nowrap">
+                  <CTableRow>
+                    <CTableHeaderCell className="bg-body-tertiary">
+                      User
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary text-center">
+                      Department
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">
+                      Work time
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">
+                      Over time
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">
+                      Weekend
+                    </CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">
+                      Shift
+                    </CTableHeaderCell>
                   </CTableRow>
-                ))}
-              </CTableBody>
-            </CTable>
+                </CTableHead>
+                <CTableBody>
+                  {checkinData.map((item, index) => (
+                    <CTableRow key={index}>
+                      <CTableDataCell>
+                        <div>{item.user?.name}</div>
+                        <div className="small text-body-secondary text-nowrap">
+                          <span>{item.user?.employee_id}</span>
+                        </div>
+                      </CTableDataCell>
+                      <CTableDataCell className="text-center">
+                        <div>{item.user?.department?.name}</div>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <div>{item.work_time}</div>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <div>{item.over_time}</div>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <div className={item.is_weekend ? "bg-primary" : ""}>
+                          {item.is_weekend ? "Yes" : "No"}
+                        </div>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <div>{item.work_shift}</div>
+                      </CTableDataCell>
+                    </CTableRow>
+                  ))}
+                </CTableBody>
+              </CTable>
+            )}
           </CCardBody>
         </CCard>
       </CContainer>

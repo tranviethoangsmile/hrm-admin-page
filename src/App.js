@@ -1,9 +1,15 @@
 import React, { Suspense, useEffect, useState } from "react";
-import { HashRouter, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { CSpinner, useColorModes } from "@coreui/react";
 import "./scss/style.scss";
+import Dashboard from "./views/dashboard/Dashboard";
 
 // Containers
 const DefaultLayout = React.lazy(() => import("./layout/DefaultLayout"));
@@ -22,7 +28,6 @@ const App = () => {
   const storedTheme = useSelector((state) => state.theme);
 
   useEffect(() => {
-    setIsLoggedIn(sessionStorage.getItem("isLoggedIn"));
     const urlParams = new URLSearchParams(window.location.href.split("?")[1]);
     const theme =
       urlParams.get("theme") &&
@@ -32,10 +37,11 @@ const App = () => {
     } else if (!isColorModeSet()) {
       setColorMode(storedTheme);
     }
+    setIsLoggedIn(sessionStorage.getItem("isLoggedIn"));
   }, [storedTheme, isColorModeSet, setColorMode]);
 
   return (
-    <HashRouter>
+    <Router>
       <Suspense
         fallback={
           <div className="pt-3 text-center">
@@ -46,6 +52,12 @@ const App = () => {
         <Routes>
           <Route exact path="/" element={<Navigate to="/login" />} />
           <Route exact path="/login" name="Login Page" element={<Login />} />
+          {/* <Route
+            exact
+            path="/dashboard"
+            name="Dashboard"
+            element={<Dashboard />}
+          /> */}
           <Route
             exact
             path="/checkin"
@@ -60,7 +72,7 @@ const App = () => {
           />
         </Routes>
       </Suspense>
-    </HashRouter>
+    </Router>
   );
 };
 
