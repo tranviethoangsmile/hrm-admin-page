@@ -7,25 +7,34 @@ import {
   CContainer,
   CRow,
 } from "@coreui/react";
-import { QRCodeCanvas } from "qrcode.react";
-import socket from "../../../scoket.config/socketio";
+import { QRCodeCanvas } from "qrcode.react"; // Correct import statement
+import socket from "../../../socket.config/socketio";
+
 const Checkin = () => {
   const [qrValue, setQrValue] = useState("");
-  socket.on("qrReset", (value) => {
-    console.log(value);
-    setQrValue(value);
-  });
+
+  useEffect(() => {
+    socket.on("qrReset", (value) => {
+      console.log(value);
+      setQrValue(value);
+    });
+
+    return () => {
+      socket.off("qrReset");
+    };
+  }, []);
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
-        <CRow className="justify-content-center">
+        <CRow className="justify-content-center bg-white">
           <CCol md={20}>
             <CCardGroup>
               <CCard
                 className="align-items-center"
                 style={{ width: "50%", height: "500px" }}
               >
-                <CCardBody>
+                <CCardBody className="bg-white">
                   <h1>Checkin</h1>
                   <QRCodeCanvas
                     level="Q"

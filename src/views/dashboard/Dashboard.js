@@ -45,6 +45,23 @@ const Dashboard = () => {
   const [checkinData, setCheckinData] = useState([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isDataEmpty, setIsDataEmpty] = useState(false);
+  const [isUserAtPosition, setIsUserAtPosition] = useState(0);
+
+  const getAllUserWithField = async () => {
+    try {
+      const field = {
+        position: userData?.position,
+      };
+      const users = await axios.post(
+        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}${FIND_ALL_USER_WITH_FIELD}`
+      );
+      if (users?.data?.success) {
+        setIsUserAtPosition(users?.data?.data.length);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem("isLoggedIn");
@@ -53,6 +70,7 @@ const Dashboard = () => {
       navigate("/login");
     } else {
       getUserCheckinOfDate();
+      getAllUserWithField();
     }
   }, [startDate]);
 
@@ -93,7 +111,7 @@ const Dashboard = () => {
   return (
     <>
       <CContainer>
-        <WidgetsBrand />
+        <WidgetsBrand users={isUserAtPosition} />
         <CCard className="mb-4 mt-4">
           <CCardHeader>
             <CRow>
