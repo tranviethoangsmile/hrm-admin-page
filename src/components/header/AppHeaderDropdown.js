@@ -21,8 +21,7 @@ import {
   cilUser,
 } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
-
-import avatar8 from "./../../assets/images/avatars/8.jpg";
+import avatar from "../../../src/assets/images/avatars/avatar-empty.png";
 
 const AppHeaderDropdown = () => {
   const [avata, setAvata] = useState("");
@@ -37,7 +36,7 @@ const AppHeaderDropdown = () => {
         className="py-0 pe-0"
         caret={false}
       >
-        <CAvatar src={avata ? avata : avatar8} size="md" />
+        <CAvatar src={avata ? avata : avatar} size="md" />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">

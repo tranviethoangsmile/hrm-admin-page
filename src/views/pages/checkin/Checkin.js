@@ -6,56 +6,62 @@ import {
   CCol,
   CContainer,
   CRow,
+  CImage,
 } from "@coreui/react";
 import { QRCodeCanvas } from "qrcode.react"; // Correct import statement
 import socket from "../../../socket.config/socketio";
-
+import avatar from "../../../assets/images/avatars/avatar-empty.png";
+import Swal from "sweetalert2";
 const Checkin = () => {
   const [qrValue, setQrValue] = useState("");
-
-  useEffect(() => {
-    socket.on("qrReset", (value) => {
-      console.log(value);
-      setQrValue(value);
-    });
-
-    return () => {
-      socket.off("qrReset");
-    };
-  }, []);
+  const [userChecked, setUserChecked] = useState("");
+  socket.on("userChecked", (data) => {
+    if (data.data.message === "in") {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Welcome",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+    if (data.data.message === "out") {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Thanks you",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+    setUserChecked(data?.data.avatar.avatar);
+  });
+  socket.on("qrReset", (value) => {
+    setQrValue(value);
+  });
 
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    <div className="min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
         <CRow className="justify-content-center bg-white">
           <CCol md={20}>
             <CCardGroup>
-              <CCard
-                className="align-items-center"
-                style={{ width: "50%", height: "500px" }}
-              >
+              <CCard className="align-items-center">
                 <CCardBody className="bg-white">
                   <h1>Checkin</h1>
-                  <QRCodeCanvas
-                    level="Q"
-                    size={300}
-                    bgColor="#ffffff"
-                    value={qrValue}
-                  />
+                  <QRCodeCanvas level="Q" size={300} value={qrValue} />
                 </CCardBody>
               </CCard>
               <CCard
-                className="text-white bg-primary py-5"
-                style={{ width: "50%", height: "500px" }}
+                className="text-black bg-white py-5 align-items-center"
+                style={{ width: "100%", height: "500px" }}
               >
                 <CCardBody className="text-center">
-                  <div>
-                    <h2>WELCOME</h2>
-                    <p>
-                      Welcome to the smart business management system. This
-                      product is developed by Hoangdev.
-                    </p>
-                  </div>
+                  <CImage
+                    fluid
+                    src={userChecked ? userChecked : avatar}
+                    width={300}
+                  />
                 </CCardBody>
               </CCard>
             </CCardGroup>
