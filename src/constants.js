@@ -1,8 +1,8 @@
-// export const BASE_URL = "http://192.168.0.107";
-// export const PORT = ":4000";
+export const BASE_URL = "http://192.168.0.107";
+export const PORT = ":4000";
 
-export const BASE_URL = "http://60.75.220.110";
-export const PORT = ":8000";
+// export const BASE_URL = "http://60.75.220.110";
+// export const PORT = ":8000";
 export const USER_URL = "/users";
 export const DEPARTMENT = "/departments";
 export const LOGIN_URL = "/login";
@@ -22,3 +22,4 @@ export const GET_ALL_BY_FIELD = "/getallinforbyfield";
 export const DELETE_INFORMATION_BY_ID = "/deleteinformationbyid";
 export const GET_CHECKIN_OF_DATE = "/getcheckinofdate";
 export const FIND_ALL_USER_WITH_FIELD = "/findallwithfield";
+export const SEARCH_ORDER_WITH_FIELD = "/searchorderwithfield";
