@@ -5,7 +5,7 @@ import {
   AppFooter,
   AppHeader,
 } from "../components/index";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const DefaultLayout = () => {
   const navigate = useNavigate();
