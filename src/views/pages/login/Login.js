@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import {
   CButton,
   CCard,
@@ -27,6 +28,7 @@ import {
 } from "../../../constants";
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user_name, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +36,6 @@ const Login = () => {
   const [badPassword, setBadPassword] = useState("");
   const [visibleAlert, setVisibleAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-
   const validate = () => {
     let isValid = true;
 
@@ -60,13 +61,6 @@ const Login = () => {
 
     return isValid;
   };
-
-  const isLoggedIn = sessionStorage.getItem("isLoggedIn");
-  useEffect(() => {
-    if (isLoggedIn) {
-      navigate("/dashboard");
-    }
-  }, [isLoggedIn]);
 
   const handleLogin = async (e) => {
     const user = {
@@ -182,7 +176,7 @@ const Login = () => {
                           className="px-4"
                           onClick={handleLogin}
                         >
-                          Login
+                          {t("Login")}
                         </CButton>
                       </CCol>
                     </CRow>

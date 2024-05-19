@@ -43,7 +43,7 @@ const Checkin = () => {
   return (
     <div className="min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
-        <CRow className="justify-content-center bg-white">
+        <CRow className="justify-content-center">
           <CCol md={20}>
             <CCardGroup>
               <CCard className="align-items-center">

@@ -5,7 +5,7 @@ import "core-js";
 
 import App from "./App";
 import store from "./store";
-
+import "../src/i18next/i18next";
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <App />

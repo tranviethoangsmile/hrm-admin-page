@@ -62,6 +62,7 @@ const Dashboard = () => {
   const [isUserAtPosition, setIsUserAtPosition] = useState(0);
   const [dayCount, setDayCount] = useState(0);
   const [nightCount, setNightCount] = useState(0);
+  const [paidCound, setPaidCount] = useState(0);
   const [checkinDetail, setCheckinDetail] = useState([]);
   const [timeWorkTotal, setTimeWorkTotal] = useState(0);
   const [OverTimeTotal, setOverTimeTotal] = useState(0);
@@ -160,6 +161,12 @@ const Dashboard = () => {
       );
       if (checkin_detail_of_user?.data.success) {
         const value = checkin_detail_of_user.data.data;
+        const paidTotal = value.reduce((total, item) => {
+          if (item.is_paid_leave) {
+            total++;
+          }
+          return total;
+        }, 0);
         const totalWorkTime = value.reduce((total, item) => {
           if (!item.is_weekend) {
             total += item.work_time;
@@ -198,6 +205,7 @@ const Dashboard = () => {
         setOverTimeTotal(totalOverTime);
         setTimeWorkTotal(totalWorkTime);
         setWeekEndTimeTotal(totalWeekend);
+        setPaidCount(paidTotal);
         setCheckinDetail(checkin_detail_of_user?.data?.data);
         setIsCheckinDetailModal(true);
       } else {
@@ -300,6 +308,7 @@ const Dashboard = () => {
                           onClick={() =>
                             handleShowCheckinDetailUser(item.user_id)
                           }
+                          color={item?.is_paid_leave ? "danger" : ""}
                         >
                           <CTableDataCell>
                             <div>{item.user?.name}</div>
@@ -366,6 +375,9 @@ const Dashboard = () => {
                 <CCol>
                   <CModalTitle>Weekend: {weekEndTimeTotal} </CModalTitle>
                 </CCol>
+                <CCol>
+                  <CModalTitle>Paid Leave: {paidCound} </CModalTitle>
+                </CCol>
               </CRow>
             </CModalHeader>
             <CModalBody>
@@ -406,7 +418,10 @@ const Dashboard = () => {
                       (a, b) => new Date(b.date) - new Date(a.date)
                     ),
                     checkinDetail.map((item, index) => (
-                      <CTableRow key={index}>
+                      <CTableRow
+                        key={index}
+                        color={item?.is_paid_leave ? "danger" : ""}
+                      >
                         <CTableDataCell>
                           <div>{item.date}</div>
                         </CTableDataCell>

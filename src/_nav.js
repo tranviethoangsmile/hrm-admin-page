@@ -12,36 +12,41 @@ import {
   cilPuzzle,
   cilSpeedometer,
   cilStar,
+  cilSpeech,
 } from "@coreui/icons";
 import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react";
 
 const _nav = [
-  // {
-  //   component: CNavItem,
-  //   name: "Dashboard",
-  //   to: "/dashboard",
-  //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  //   badge: {
-  //     color: "info",
-  //     text: "NEW",
-  //   },
-  // },
-  // {
-  //   component: CNavTitle,
-  //   name: "Theme",
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: "Colors",
-  //   to: "/theme/colors",
-  //   icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: "Typography",
-  //   to: "/theme/typography",
-  //   icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
-  // },
+  {
+    component: CNavItem,
+    name: "Dashboard",
+    to: "/dashboard",
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    badge: {
+      color: "info",
+      text: "NEW",
+    },
+  },
+  {
+    component: CNavTitle,
+    name: "FEATURE",
+  },
+  {
+    component: CNavItem,
+    name: "Paid Leave",
+    to: "/paidleave",
+    icon: <CIcon icon={cilSpeech} customClassName="nav-icon" />,
+    badge: {
+      color: "info",
+      text: "NEW",
+    },
+  },
+  {
+    component: CNavItem,
+    name: "Handle Value",
+    to: "/theme/typography",
+    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+  },
   // {
   //   component: CNavTitle,
   //   name: "Components",
