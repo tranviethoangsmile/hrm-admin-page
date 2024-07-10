@@ -25,6 +25,8 @@ import {
   CModalHeader,
   CModalTitle,
   CModalBody,
+  CModalFooter,
+  CButton,
 } from "@coreui/react";
 import {
   BASE_URL,
@@ -462,6 +464,9 @@ const Dashboard = () => {
                 </CTableBody>
               </CTable>
             </CModalBody>
+            <CModalFooter>
+              <CButton color="primary">Check</CButton>
+            </CModalFooter>
           </CModal>
           <CCol sm={6}>
             <CCard className="mb-4 mt-4">
