@@ -1,7 +1,7 @@
 // export const BASE_URL = "http://192.168.0.117";
 // export const PORT = ":4000";
 
-export const BASE_URL = "http://18.236.164.13";
+export const BASE_URL = "http://54.200.248.63";
 export const PORT = ":80";
 export const USER_URL = "/users";
 export const DEPARTMENT = "/departments";
