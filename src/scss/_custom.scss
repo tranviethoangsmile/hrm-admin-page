@@ -1,1 +1,94 @@
 // Here you can add other styles
+
+/* Sidebar hiện đại */
+.sidebar-modern {
+  background: #fff;
+  border-radius: 2rem 0 0 2rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  min-height: 100vh;
+}
+.sidebar-nav-modern .sidebar-nav-link {
+  font-size: 1.08rem;
+  color: #222;
+  border-radius: 1rem;
+  transition: background 0.2s, color 0.2s;
+}
+.sidebar-nav-modern .sidebar-nav-link.active,
+.sidebar-nav-modern .sidebar-nav-link:hover {
+  background: #e6f4ea;
+  color: #1a7f37;
+}
+.sidebar-nav-label {
+  font-size: 1.08rem;
+}
+
+/* Card, bảng, modal, button bo tròn, spacing thoáng */
+.card,
+.CCard,
+.CCardHeader,
+.CCardBody,
+.CModal,
+.CModalHeader,
+.CModalBody,
+.CModalFooter {
+  border-radius: 1.5rem !important;
+}
+.CCardHeader,
+.CModalHeader {
+  background: #f8fafc !important;
+}
+.CCardBody,
+.CModalBody {
+  background: #fff !important;
+}
+.CButton,
+button,
+input[type="button"],
+input[type="submit"] {
+  border-radius: 2rem !important;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+}
+
+/* Table bo tròn, header sáng, hover đẹp */
+.table,
+.CTable {
+  border-radius: 1.2rem !important;
+  overflow: hidden;
+  background: #fff;
+}
+.CTableHead th,
+.table thead th {
+  background: #f8fafc !important;
+  font-weight: 700;
+  color: #1a7f37;
+  border-bottom: 2px solid #e6f4ea !important;
+}
+.CTableRow:hover {
+  background: #f1f8f4 !important;
+}
+
+/* Header, Footer bo tròn, spacing lớn */
+.app-header, .app-footer {
+  border-radius: 1.5rem !important;
+  background: #fff !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+}
+
+/* Responsive spacing */
+@media (max-width: 768px) {
+  .app-header, .app-footer, .card, .CCard, .CModal, .sidebar-modern {
+    border-radius: 1rem !important;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .sidebar-modern {
+    min-width: 100vw;
+    border-radius: 0 0 2rem 2rem;
+  }
+}
+
+body, .app-header, .app-footer {
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+  background: #f4f7fa !important;
+}

@@ -23,19 +23,54 @@ const AppSidebar = () => {
 
   return (
     <CSidebar
-      className="border-end"
-      colorScheme="dark"
+      className={`border-0 shadow-lg rounded-end-4 bg-white sidebar-modern${unfoldable ? " sidebar-narrow" : ""}`}
+      colorScheme="light"
       position="fixed"
       unfoldable={unfoldable}
       visible={sidebarShow}
+      style={{
+        minHeight: "100vh",
+        width: unfoldable ? 72 : 260,
+        transition: "width 0.2s",
+      }}
       onVisibleChange={(visible) => {
         dispatch({ type: "set", sidebarShow: visible });
       }}
     >
-      <CSidebarHeader className="border-bottom">
-        <CSidebarBrand to="/">
-          <img src={logo} style={{ width: "230px", height: "81px" }} />
-        </CSidebarBrand>
+      <CSidebarHeader className="border-0 bg-white d-flex align-items-center justify-content-center px-3 py-3 rounded-top-4">
+        <div
+          style={{
+            background: "linear-gradient(135deg, #1a7f37 0%, #157347 100%)",
+            borderRadius: 28,
+            boxShadow: "0 8px 32px rgba(26,127,55,0.18)",
+            padding: 18,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "3px solid #fff",
+            width: unfoldable ? 56 : 220,
+            height: unfoldable ? 56 : 120,
+            margin: "0 auto",
+            transition: "all 0.2s",
+          }}
+        >
+          <span
+            style={{
+              fontSize: unfoldable ? 18 : 36,
+              fontWeight: 900,
+              color: "#fff",
+              letterSpacing: 2,
+              textShadow: "0 2px 12px rgba(26,127,55,0.25)",
+              textAlign: "center",
+              width: "100%",
+              display: "block",
+              lineHeight: unfoldable ? "20px" : "44px",
+              userSelect: "none",
+            }}
+          >
+            HRM METAL
+          </span>
+        </div>
         <CCloseButton
           className="d-lg-none"
           dark
@@ -43,7 +78,7 @@ const AppSidebar = () => {
         />
       </CSidebarHeader>
       <AppSidebarNav items={navigation} />
-      <CSidebarFooter className="border-top d-none d-lg-flex">
+      <CSidebarFooter className="border-0 bg-white d-none d-lg-flex rounded-bottom-4 justify-content-center py-3">
         <CSidebarToggler
           onClick={() =>
             dispatch({ type: "set", sidebarUnfoldable: !unfoldable })

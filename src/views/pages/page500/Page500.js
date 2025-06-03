@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import {
   CButton,
   CCol,
@@ -7,11 +7,13 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilMagnifyingGlass } from '@coreui/icons'
+} from "@coreui/react";
+import CIcon from "@coreui/icons-react";
+import { cilMagnifyingGlass } from "@coreui/icons";
+import { useTranslation } from "react-i18next";
 
 const Page500 = () => {
+  const { t } = useTranslation();
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -19,23 +21,23 @@ const Page500 = () => {
           <CCol md={6}>
             <span className="clearfix">
               <h1 className="float-start display-3 me-4">500</h1>
-              <h4 className="pt-3">Houston, we have a problem!</h4>
+              <h4 className="pt-3">{t("page500.title")}</h4>
               <p className="text-body-secondary float-start">
-                The page you are looking for is temporarily unavailable.
+                {t("page500.description")}
               </p>
             </span>
             <CInputGroup className="input-prepend">
               <CInputGroupText>
                 <CIcon icon={cilMagnifyingGlass} />
               </CInputGroupText>
-              <CFormInput type="text" placeholder="What are you looking for?" />
-              <CButton color="info">Search</CButton>
+              <CFormInput type="text" placeholder={t("page500.placeholder")} />
+              <CButton color="info">{t("search")}</CButton>
             </CInputGroup>
           </CCol>
         </CRow>
       </CContainer>
     </div>
-  )
-}
+  );
+};
 
-export default Page500
+export default Page500;

@@ -1,23 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useTranslation } from "react-i18next";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CButton,
   CCard,
   CCardBody,
-  CCardGroup,
   CCol,
   CContainer,
   CForm,
   CFormInput,
-  CInputGroup,
-  CInputGroupText,
   CRow,
   CAlert,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilLockLocked, cilUser } from "@coreui/icons";
+import logo from "../../../../public/logo-metal.png";
 import {
   BASE_URL,
   V1,
@@ -26,57 +22,55 @@ import {
   API,
   PORT,
 } from "../../../constants";
+import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user_name, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [badUserName, setBadUserName] = useState("");
   const [badPassword, setBadPassword] = useState("");
   const [visibleAlert, setVisibleAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+
   const validate = () => {
     let isValid = true;
-
     if (user_name === "") {
-      setBadUserName("Please input username");
+      setBadUserName(t("login.usernameRequired"));
       isValid = false;
     } else if (user_name.length < 5) {
-      setBadUserName("Please enter a username with at least 5 characters");
+      setBadUserName(t("login.usernameMinLength"));
       isValid = false;
     } else {
       setBadUserName("");
     }
-
     if (password === "") {
-      setBadPassword("Please input password");
+      setBadPassword(t("login.passwordRequired"));
       isValid = false;
     } else if (password.length < 6) {
-      setBadPassword("Please enter a password with at least 6 characters");
+      setBadPassword(t("login.passwordMinLength"));
       isValid = false;
     } else {
       setBadPassword("");
     }
-
     return isValid;
   };
 
   const handleLogin = async (e) => {
-    const user = {
-      user_name: user_name,
-      password: password,
-    };
+    e.preventDefault();
     if (validate()) {
       try {
         const respone = await axios.post(
           `${BASE_URL}${PORT}${API}${VERSION}${V1}${LOGIN_URL}`,
           {
-            ...user,
+            user_name,
+            password,
           }
         );
         if (!respone?.data?.success) {
-          setVisibleAlert(!visibleAlert);
+          setVisibleAlert(true);
           setAlertMessage(respone?.data?.message);
         } else {
           sessionStorage.setItem("isLoggedIn", true);
@@ -85,129 +79,97 @@ const Login = () => {
           navigate("/dashboard");
         }
       } catch (error) {
-        console.log(error);
+        setVisibleAlert(true);
+        setAlertMessage("Đăng nhập thất bại. Vui lòng thử lại!");
       }
     }
   };
 
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    <div className="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light">
       <CContainer>
-        <CAlert
-          className="d-flex align-items-center"
-          color="danger"
-          dismissible
-          visible={visibleAlert}
-          onClose={() => setVisibleAlert(false)}
-        >
-          <svg
-            className="flex-shrink-0 me-2"
-            width="24"
-            height="24"
-            viewBox="0 0 512 512"
-          >
-            <rect
-              width="32"
-              height="176"
-              x="240"
-              y="176"
-              fill="var(--ci-primary-color, currentColor)"
-              className="ci-primary"
-            ></rect>
-            <rect
-              width="32"
-              height="32"
-              x="240"
-              y="384"
-              fill="var(--ci-primary-color, currentColor)"
-              className="ci-primary"
-            ></rect>
-            <path
-              fill="var(--ci-primary-color, currentColor)"
-              d="M274.014,16H237.986L16,445.174V496H496V445.174ZM464,464H48V452.959L256,50.826,464,452.959Z"
-              className="ci-primary"
-            ></path>
-          </svg>
-          {alertMessage}
-        </CAlert>
         <CRow className="justify-content-center">
-          <CCol md={8}>
-            <CCardGroup>
-              <CCard className="p-4">
-                <CCardBody>
-                  <CForm>
-                    <h1>Login</h1>
-                    <p className="text-body-secondary">
-                      Sign In to Admin account
-                    </p>
-                    <CInputGroup className="mb-3">
-                      <CInputGroupText>
+          <CCol md={6} lg={5} sm={12}>
+            <CCard className="shadow-lg border-0 rounded-4 p-4">
+              <CCardBody>
+                <div className="text-center mb-4">
+                  <img
+                    src={logo}
+                    alt="Logo"
+                    style={{ width: 80, marginBottom: 16 }}
+                  />
+                  <h2
+                    className="fw-bold mt-2 mb-1"
+                    style={{ color: "#1a7f37" }}
+                  >
+                    {t("HRM Metal")}
+                  </h2>
+                  <div className="text-muted mb-2">{t("loginSubtitle")}</div>
+                </div>
+                <CAlert
+                  color="danger"
+                  dismissible
+                  visible={visibleAlert}
+                  onClose={() => setVisibleAlert(false)}
+                  className="py-2"
+                >
+                  {alertMessage}
+                </CAlert>
+                <CForm onSubmit={handleLogin}>
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      {t("login.usernameLabel")}
+                    </label>
+                    <div className="input-group">
+                      <span className="input-group-text bg-white">
                         <CIcon icon={cilUser} />
-                      </CInputGroupText>
+                      </span>
                       <CFormInput
-                        placeholder="Username"
+                        placeholder={t("login.usernamePlaceholder")}
                         autoComplete="username"
                         value={user_name}
                         onChange={(e) => setUserName(e.target.value)}
+                        className={badUserName ? "is-invalid" : ""}
                       />
-                      {badUserName !== "" && (
-                        <span className="text-danger">{badUserName}</span>
+                      {badUserName && (
+                        <div className="invalid-feedback">{badUserName}</div>
                       )}
-                    </CInputGroup>
-                    <CInputGroup className="mb-4">
-                      <CInputGroupText>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      {t("login.passwordLabel")}
+                    </label>
+                    <div className="input-group">
+                      <span className="input-group-text bg-white">
                         <CIcon icon={cilLockLocked} />
-                      </CInputGroupText>
+                      </span>
                       <CFormInput
+                        type="password"
+                        placeholder={t("login.passwordPlaceholder")}
+                        autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        type="password"
-                        placeholder="Password"
-                        autoComplete="current-password"
+                        className={badPassword ? "is-invalid" : ""}
                       />
-                      {badPassword !== "" && (
-                        <span className="text-danger">{badPassword}</span>
+                      {badPassword && (
+                        <div className="invalid-feedback">{badPassword}</div>
                       )}
-                    </CInputGroup>
-                    <CRow>
-                      <CCol xs={6}>
-                        <CButton
-                          color="primary"
-                          className="px-4"
-                          onClick={handleLogin}
-                        >
-                          {t("Login")}
-                        </CButton>
-                      </CCol>
-                    </CRow>
-                  </CForm>
-                </CCardBody>
-              </CCard>
-              <CCard
-                className="text-white bg-primary py-5"
-                style={{ width: "44%" }}
-              >
-                <CCardBody className="text-center">
-                  <div>
-                    <h2>WELCOME</h2>
-                    <p>
-                      Welcome to the smart business management system. This
-                      product is developed by Hoangdev.
-                    </p>
-                    <Link to="/">
-                      <CButton
-                        color="primary"
-                        className="mt-3"
-                        active
-                        tabIndex={-1}
-                      >
-                        Contact
-                      </CButton>
-                    </Link>
+                    </div>
                   </div>
-                </CCardBody>
-              </CCard>
-            </CCardGroup>
+                  <div className="d-grid mt-4">
+                    <CButton
+                      color="success"
+                      size="lg"
+                      type="submit"
+                      className="rounded-pill fw-bold shadow-sm"
+                    >
+                      {t("login.loginBtn")}
+                    </CButton>
+                  </div>
+                </CForm>
+              </CCardBody>
+            </CCard>
           </CCol>
         </CRow>
       </CContainer>
