@@ -54,22 +54,21 @@ const AppSidebar = () => {
             transition: "all 0.2s",
           }}
         >
-          <span
+          <img
+            src={logo}
+            alt="Logo"
             style={{
-              fontSize: unfoldable ? 18 : 36,
-              fontWeight: 900,
-              color: "#fff",
-              letterSpacing: 2,
-              textShadow: "0 2px 12px rgba(26,127,55,0.25)",
-              textAlign: "center",
-              width: "100%",
+              width: unfoldable ? 36 : 100,
+              height: unfoldable ? 36 : 100,
+              borderRadius: 18,
+              objectFit: "contain",
+              background: "transparent",
+              boxShadow: "0 2px 12px rgba(26,127,55,0.12)",
+              border: "none",
               display: "block",
-              lineHeight: unfoldable ? "20px" : "44px",
-              userSelect: "none",
+              transition: "all 0.2s",
             }}
-          >
-            HRM METAL
-          </span>
+          />
         </div>
         <CCloseButton
           className="d-lg-none"

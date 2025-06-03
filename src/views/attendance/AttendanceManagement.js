@@ -249,88 +249,117 @@ const AttendanceManagement = () => {
         scrollable
         onClose={() => setIsCheckinDetailModal(false)}
       >
-        <CModalHeader className="bg-light border-0 rounded-top-4">
-          <CRow className="w-100">
-            <CCol>
-              <CModalTitle className="fw-bold">Chi tiết Checkin</CModalTitle>
+        <CModalHeader className="bg-success bg-gradient border-0 rounded-top-4 text-white align-items-center">
+          <CRow className="w-100 align-items-center">
+            <CCol xs={12} md={3} className="mb-2 mb-md-0">
+              <CModalTitle className="fw-bold fs-4">
+                {t("checkinDetail")}
+              </CModalTitle>
             </CCol>
-            <CCol>
-              <CModalTitle>Ca ngày: {dayShitfTotal}</CModalTitle>
+            <CCol xs={6} md={2}>
+              <span className="fw-semibold">
+                {t("dayShift")}:{" "}
+                <span className="text-white">{dayShitfTotal}</span>
+              </span>
             </CCol>
-            <CCol>
-              <CModalTitle>Ca đêm: {nightShiftTotal}</CModalTitle>
+            <CCol xs={6} md={2}>
+              <span className="fw-semibold">
+                {t("nightShift")}:{" "}
+                <span className="text-white">{nightShiftTotal}</span>
+              </span>
             </CCol>
-            <CCol>
-              <CModalTitle>Giờ làm: {timeWorkTotal}</CModalTitle>
+            <CCol xs={6} md={2}>
+              <span className="fw-semibold">
+                {t("totalWork")}:{" "}
+                <span className="text-white">{timeWorkTotal}</span>
+              </span>
             </CCol>
-            <CCol>
-              <CModalTitle>Tăng ca: {OverTimeTotal}</CModalTitle>
+            <CCol xs={6} md={2}>
+              <span className="fw-semibold">
+                {t("totalOver")}:{" "}
+                <span className="text-white">{OverTimeTotal}</span>
+              </span>
             </CCol>
-            <CCol>
-              <CModalTitle>Cuối tuần: {weekEndTimeTotal}</CModalTitle>
-            </CCol>
-            <CCol>
-              <CModalTitle>Nghỉ phép: {paidCound}</CModalTitle>
+            <CCol xs={6} md={1}>
+              <span className="fw-semibold">
+                {t("paidLeave")}:{" "}
+                <span className="text-white">{paidCound}</span>
+              </span>
             </CCol>
           </CRow>
         </CModalHeader>
-        <CModalBody className="bg-white rounded-bottom-4">
-          <CTable
-            align="middle"
-            hover
-            responsive
-            bordered
-            className="rounded-4 overflow-hidden"
-          >
-            <CTableHead color="light">
-              <CTableRow>
-                <CTableHeaderCell>Ngày</CTableHeaderCell>
-                <CTableHeaderCell>Nhân viên</CTableHeaderCell>
-                <CTableHeaderCell>Phòng ban</CTableHeaderCell>
-                <CTableHeaderCell>Giờ làm</CTableHeaderCell>
-                <CTableHeaderCell>Tăng ca</CTableHeaderCell>
-                <CTableHeaderCell>Cuối tuần</CTableHeaderCell>
-                <CTableHeaderCell>Ca</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {checkinDetail
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .map((item, index) => (
-                  <CTableRow
-                    key={index}
-                    color={item?.is_paid_leave ? "danger" : ""}
-                  >
-                    <CTableDataCell>{item.date}</CTableDataCell>
-                    <CTableDataCell>
-                      <div className="fw-semibold">{item.user?.name}</div>
-                      <div className="small text-muted">
-                        {item.user?.employee_id}
-                      </div>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      {item.user?.department?.name}
-                    </CTableDataCell>
-                    <CTableDataCell>{item.work_time}</CTableDataCell>
-                    <CTableDataCell>{item.over_time}</CTableDataCell>
-                    <CTableDataCell>
-                      <span
-                        className={
-                          item.is_weekend ? "text-warning" : "text-success"
-                        }
-                      >
-                        {item.is_weekend ? (
-                          <CIcon icon={cilCircle} size="lg" />
-                        ) : (
-                          <CIcon icon={cilX} size="lg" />
-                        )}
-                      </span>
-                    </CTableDataCell>
-                    <CTableDataCell>{item.work_shift}</CTableDataCell>
-                  </CTableRow>
-                ))}
-            </CTableBody>
-          </CTable>
+        <CModalBody className="bg-white rounded-bottom-4 p-0">
+          <div className="table-responsive">
+            <CTable
+              align="middle"
+              hover
+              responsive
+              bordered
+              className="rounded-4 overflow-hidden mb-0"
+            >
+              <CTableHead color="light">
+                <CTableRow>
+                  <CTableHeaderCell>{t("date")}</CTableHeaderCell>
+                  <CTableHeaderCell>{t("employee")}</CTableHeaderCell>
+                  <CTableHeaderCell>{t("department")}</CTableHeaderCell>
+                  <CTableHeaderCell>{t("workTime")}</CTableHeaderCell>
+                  <CTableHeaderCell>{t("overTime")}</CTableHeaderCell>
+                  <CTableHeaderCell>{t("weekend")}</CTableHeaderCell>
+                  <CTableHeaderCell>{t("shift")}</CTableHeaderCell>
+                </CTableRow>
+              </CTableHead>
+              <CTableBody>
+                {checkinDetail
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                  .map((item, index) => (
+                    <CTableRow
+                      key={index}
+                      color={item?.is_paid_leave ? "danger" : ""}
+                    >
+                      <CTableDataCell>{item.date}</CTableDataCell>
+                      <CTableDataCell>
+                        <div className="d-flex align-items-center gap-2">
+                          <img
+                            src={item.user?.avatar || "/avatar-empty.png"}
+                            alt="avatar"
+                            style={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: "50%",
+                            }}
+                          />
+                          <div>
+                            <div className="fw-semibold text-primary">
+                              {item.user?.name}
+                            </div>
+                            <div className="small text-muted">
+                              {item.user?.employee_id}
+                            </div>
+                          </div>
+                        </div>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        {item.user?.department?.name}
+                      </CTableDataCell>
+                      <CTableDataCell>{item.work_time}</CTableDataCell>
+                      <CTableDataCell>{item.over_time}</CTableDataCell>
+                      <CTableDataCell>
+                        <span
+                          className={
+                            item.is_weekend
+                              ? "badge bg-warning text-dark"
+                              : "badge bg-success"
+                          }
+                        >
+                          {item.is_weekend ? t("yes") : t("no")}
+                        </span>
+                      </CTableDataCell>
+                      <CTableDataCell>{item.work_shift}</CTableDataCell>
+                    </CTableRow>
+                  ))}
+              </CTableBody>
+            </CTable>
+          </div>
         </CModalBody>
         <CModalFooter className="bg-light rounded-bottom-4 border-0">
           <CButton
@@ -338,7 +367,7 @@ const AttendanceManagement = () => {
             onClick={() => setIsCheckinDetailModal(false)}
             className="rounded-pill px-4 fw-bold"
           >
-            Đóng
+            {t("close") || "Đóng"}
           </CButton>
         </CModalFooter>
       </CModal>
