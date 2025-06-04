@@ -22,13 +22,20 @@ import {
 } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import avatar from "../../../src/assets/images/avatars/avatar-empty.png";
+import { useNavigate } from "react-router-dom";
 
-const AppHeaderDropdown = () => {
+const AppHeaderDropdown = ({ user }) => {
+  const navigate = useNavigate();
   const [avata, setAvata] = useState("");
   useEffect(() => {
-    const userData = JSON.parse(sessionStorage.getItem("userIF"));
-    setAvata(userData?.avatar);
-  }, []);
+    setAvata(user?.avatar);
+  }, [user]);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle
@@ -40,7 +47,7 @@ const AppHeaderDropdown = () => {
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">
-          Account
+          {user?.name || "Account"}
         </CDropdownHeader>
         <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
@@ -96,9 +103,9 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem href="#">
+        <CDropdownItem onClick={handleLogout} style={{ color: "#e74c3c" }}>
           <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+          Logout
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

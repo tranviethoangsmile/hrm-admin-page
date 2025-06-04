@@ -92,3 +92,98 @@ body, .app-header, .app-footer {
   font-family: 'Inter', 'Roboto', Arial, sans-serif;
   background: #f4f7fa !important;
 }
+
+body.dark-mode,
+body.dark-mode .app-header,
+body.dark-mode .app-footer,
+body.dark-mode .sidebar-modern,
+body.dark-mode .login-page,
+body.dark-mode .bg-white,
+body.dark-mode .bg-light,
+body.dark-mode .card,
+body.dark-mode .CCard,
+body.dark-mode .CCardBody,
+body.dark-mode .CCardHeader,
+body.dark-mode .CForm,
+body.dark-mode .CFormInput,
+body.dark-mode .CButton,
+body.dark-mode .CAlert,
+body.dark-mode .CFormSwitch,
+body.dark-mode .shadow-lg,
+body.dark-mode .rounded-4,
+body.dark-mode .border-0,
+body.dark-mode .p-4 {
+  background: #181c1f !important;
+  color: #f4f7fa !important;
+}
+body.dark-mode .CCard,
+body.dark-mode .CCardBody,
+body.dark-mode .CCardHeader,
+body.dark-mode .card,
+body.dark-mode .CForm,
+body.dark-mode .CFormInput,
+body.dark-mode .CButton,
+body.dark-mode .CAlert,
+body.dark-mode .CFormSwitch {
+  background: #23272b !important;
+  color: #f4f7fa !important;
+}
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6,
+body.dark-mode label,
+body.dark-mode .form-label,
+body.dark-mode .sidebar-nav-label,
+body.dark-mode .sidebar-nav-link,
+body.dark-mode .sidebar-nav-link.active,
+body.dark-mode .sidebar-nav-link:hover,
+body.dark-mode .CTableHead th,
+body.dark-mode .CTableDataCell,
+body.dark-mode .CTableHeaderCell,
+body.dark-mode .CTableRow,
+body.dark-mode .table,
+body.dark-mode .CTable {
+  color: #f4f7fa !important;
+}
+body.dark-mode .CButton,
+body.dark-mode button,
+body.dark-mode .btn,
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  color: #f4f7fa !important;
+  background: #23272b !important;
+  border-color: #444 !important;
+}
+body.dark-mode .form-control::placeholder {
+  color: #b0b0b0 !important;
+}
+body.dark-mode .sidebar-nav-modern .sidebar-nav-link {
+  color: #f4f7fa !important;
+}
+body.dark-mode .sidebar-nav-modern .sidebar-nav-link.active,
+body.dark-mode .sidebar-nav-modern .sidebar-nav-link:hover {
+  background: #1a7f37 !important;
+  color: #fff !important;
+}
+body.dark-mode .CFormSwitch label,
+body.dark-mode .CFormSwitch .form-check-label {
+  color: #4ade80 !important;
+  font-weight: 600;
+  text-shadow: 0 1px 4px #181c1f;
+}
+body.dark-mode .CFormSwitch input:checked + label,
+body.dark-mode .CFormSwitch input:checked + .form-check-label {
+  color: #22d3ee !important;
+}
+body.font-small {
+  font-size: 13px !important;
+}
+body.font-medium {
+  font-size: 16px !important;
+}
+body.font-large {
+  font-size: 20px !important;
+}

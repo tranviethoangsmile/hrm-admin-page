@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CButton,
@@ -10,6 +10,7 @@ import {
   CFormInput,
   CRow,
   CAlert,
+  CFormSwitch,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilLockLocked, cilUser } from "@coreui/icons";
@@ -34,6 +35,18 @@ const Login = () => {
   const [badPassword, setBadPassword] = useState("");
   const [visibleAlert, setVisibleAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem("darkMode") === "true"
+  );
+
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+    localStorage.setItem("darkMode", darkMode);
+  }, [darkMode]);
 
   const validate = () => {
     let isValid = true;
@@ -76,7 +89,7 @@ const Login = () => {
           sessionStorage.setItem("isLoggedIn", true);
           sessionStorage.setItem("token", respone?.data?.token);
           sessionStorage.setItem("userIF", JSON.stringify(respone?.data?.data));
-          navigate("/dashboard");
+          navigate("/dashboard", { replace: true });
         }
       } catch (error) {
         setVisibleAlert(true);
@@ -86,7 +99,16 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <div className="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light position-relative">
+      <div style={{ position: "fixed", top: 24, right: 32, zIndex: 10 }}>
+        <CFormSwitch
+          id="darkModeSwitchLogin"
+          label={darkMode ? t("darkModeOn") : t("darkModeOff")}
+          checked={darkMode}
+          onChange={() => setDarkMode((v) => !v)}
+          size="lg"
+        />
+      </div>
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={6} lg={5} sm={12}>

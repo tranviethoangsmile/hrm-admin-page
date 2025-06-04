@@ -36,9 +36,24 @@ const AppHeader = () => {
     "coreui-free-react-admin-template-theme"
   );
   const { t, i18n } = useTranslation();
-
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
+  const [user, setUser] = React.useState({});
+
+  React.useEffect(() => {
+    const userData = JSON.parse(sessionStorage.getItem("userIF"));
+    setUser(userData || {});
+    // Lấy ngôn ngữ từ localStorage nếu có
+    const lang = localStorage.getItem("i18nextLng");
+    if (lang && lang !== i18n.language) {
+      i18n.changeLanguage(lang);
+    }
+  }, []);
+
+  const handleChangeLanguage = (e) => {
+    i18n.changeLanguage(e.target.value);
+    localStorage.setItem("i18nextLng", e.target.value);
+  };
 
   useEffect(() => {
     document.addEventListener("scroll", () => {
@@ -65,7 +80,7 @@ const AppHeader = () => {
           className="form-select form-select-sm w-auto"
           style={{ minWidth: 110 }}
           value={i18n.language}
-          onChange={(e) => i18n.changeLanguage(e.target.value)}
+          onChange={handleChangeLanguage}
         >
           <option value="en">{t("en")}</option>
           <option value="vn">{t("vi")}</option>
@@ -73,11 +88,7 @@ const AppHeader = () => {
           <option value="pt">{t("pt")}</option>
         </select>
         <span className="fw-semibold text-secondary">{t("welcome")}</span>
-        <img
-          src="/avatar-empty.png"
-          alt="avatar"
-          style={{ width: 36, height: 36, borderRadius: "50%" }}
-        />
+        <AppHeaderDropdown user={user} />
       </div>
     </header>
   );
