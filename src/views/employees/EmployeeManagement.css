@@ -1,0 +1,526 @@
+/* EmployeeManagement.css */
+.employee-management-container {
+  display: flex;
+  gap: 32px;
+  padding: 32px 0;
+  min-height: 80vh;
+}
+.employee-list-panel {
+  min-width: 320px;
+  max-width: 360px;
+  flex: 0 0 340px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(34, 139, 34, 0.07);
+  height: fit-content;
+}
+.employee-list-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 0 0 8px 0;
+}
+.user-list-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.user-list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s;
+  border: 1px solid transparent;
+}
+.user-list-item.selected,
+.user-list-item:hover {
+  background: #f1f8f4;
+  border-color: #1a7f37;
+  box-shadow: 0 2px 8px rgba(34, 139, 34, 0.07);
+}
+.user-avatar {
+  flex-shrink: 0;
+}
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+.employee-detail-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.employee-detail-card {
+  width: 100%;
+  max-width: 700px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(34, 139, 34, 0.07);
+}
+.employee-detail-empty {
+  width: 100%;
+  max-width: 700px;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.employee-edit-form .form-label {
+  font-weight: 500;
+}
+@media (max-width: 900px) {
+  .employee-management-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .employee-list-panel {
+    max-width: 100%;
+    width: 100%;
+    flex: unset;
+  }
+  .employee-detail-panel {
+    max-width: 100%;
+    width: 100%;
+    flex: unset;
+  }
+  .employee-detail-card {
+    max-width: 100%;
+  }
+}
+.employee-profile-card {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 4px 32px rgba(34, 139, 34, 0.1);
+  padding: 38px 32px 32px 32px;
+  max-width: 420px;
+  margin: 0 auto;
+  transition: box-shadow 0.2s;
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+.profile-avatar {
+  border: 5px solid #e6f4ea;
+  box-shadow: 0 2px 12px rgba(34, 139, 34, 0.1);
+  width: 80px;
+  height: 80px;
+}
+.profile-info {
+  flex: 1;
+}
+.profile-name {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+  color: #222;
+}
+.profile-id-badge {
+  display: inline-block;
+  background: #f1f3f4;
+  color: #888;
+  border-radius: 10px;
+  padding: 3px 16px;
+  font-size: 1.01rem;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.profile-status {
+  display: flex;
+  align-items: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-top: 4px;
+  color: #1a7f37;
+  letter-spacing: 0.2px;
+}
+.profile-status.inactive {
+  color: #b0b0b0;
+}
+.profile-status .status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 9px;
+  display: inline-block;
+  background: #1a7f37;
+  box-shadow: 0 0 0 2px #e6f4ea;
+}
+.profile-status.inactive .status-dot {
+  background: #bbb;
+  box-shadow: 0 0 0 2px #f1f3f4;
+}
+.profile-details {
+  margin-top: 22px;
+}
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 13px;
+  align-items: center;
+}
+.profile-label {
+  color: #a0a0a0;
+  font-size: 0.99rem;
+  min-width: 120px;
+  font-weight: 500;
+}
+.profile-value {
+  font-weight: 600;
+  color: #222;
+  font-size: 1.01rem;
+  text-align: right;
+}
+.profile-department-badge {
+  background: linear-gradient(90deg, #e6f4ea, #d2f7e3);
+  color: #1a7f37;
+  border-radius: 8px;
+  padding: 2px 14px;
+  font-size: 1.01rem;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(34, 139, 34, 0.04);
+}
+.profile-update-btn {
+  border-radius: 22px;
+  padding: 8px 32px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #6a5af9, #7b7dfa 80%);
+  border: none;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(106, 90, 249, 0.1);
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.profile-update-btn:hover {
+  background: linear-gradient(90deg, #7b7dfa, #6a5af9 80%);
+  box-shadow: 0 4px 16px rgba(106, 90, 249, 0.16);
+}
+@media (max-width: 600px) {
+  .employee-profile-card {
+    padding: 18px 6px 18px 6px;
+    max-width: 100vw;
+  }
+  .profile-header {
+    gap: 12px;
+  }
+  .profile-name {
+    font-size: 1.15rem;
+  }
+  .profile-row {
+    font-size: 0.97rem;
+  }
+}
+.employee-modern-card {
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 6px 32px rgba(34, 139, 34, 0.13);
+  padding: 40px 36px 32px 36px;
+  max-width: 480px;
+  margin: 0 auto;
+  transition: box-shadow 0.2s;
+}
+.modern-header {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+.modern-avatar-glow {
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 6px #e6f4ea,
+    0 4px 24px #b6f0d4;
+  padding: 4px;
+  background: #fff;
+}
+.modern-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 12px rgba(34, 139, 34, 0.1);
+}
+.modern-header-info {
+  flex: 1;
+  min-width: 0;
+}
+.modern-name-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 2px;
+}
+.modern-name {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #222;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.modern-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.01rem;
+  font-weight: 600;
+  border-radius: 16px;
+  padding: 2px 14px 2px 8px;
+  background: #e6f4ea;
+  color: #1a7f37;
+}
+.modern-status-badge.inactive {
+  background: #f1f3f4;
+  color: #bbb;
+}
+.status-dot-modern {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  background: #1a7f37;
+}
+.modern-status-badge.inactive .status-dot-modern {
+  background: #bbb;
+}
+.modern-id {
+  font-size: 1.01rem;
+  color: #888;
+  margin-bottom: 6px;
+}
+.modern-department-tag {
+  display: inline-block;
+  background: linear-gradient(90deg, #e6f4ea, #d2f7e3);
+  color: #1a7f37;
+  border-radius: 8px;
+  padding: 2px 14px;
+  font-size: 1.01rem;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(34, 139, 34, 0.04);
+  margin-top: 2px;
+}
+.modern-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+  margin-top: 24px;
+}
+.modern-detail-label {
+  color: #a0a0a0;
+  font-size: 0.97rem;
+  font-weight: 500;
+  text-align: left;
+}
+.modern-detail-value {
+  font-weight: 700;
+  color: #222;
+  font-size: 1.01rem;
+  text-align: right;
+}
+.modern-update-btn-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 32px;
+}
+.modern-update-btn {
+  border-radius: 22px;
+  padding: 10px 38px;
+  font-size: 1.12rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #6a5af9, #7b7dfa 80%);
+  border: none;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(106, 90, 249, 0.1);
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.modern-update-btn:hover {
+  background: linear-gradient(90deg, #7b7dfa, #6a5af9 80%);
+  box-shadow: 0 4px 16px rgba(106, 90, 249, 0.16);
+}
+@media (max-width: 700px) {
+  .employee-modern-card {
+    padding: 16px 2vw 16px 2vw;
+    max-width: 100vw;
+  }
+  .modern-header {
+    gap: 12px;
+  }
+  .modern-name {
+    font-size: 1.15rem;
+  }
+  .modern-details-grid {
+    grid-template-columns: 1fr;
+    gap: 8px 0;
+  }
+}
+.employee-page-container {
+  width: 100%;
+  padding: 0 0 32px 0;
+}
+.employee-dashboard-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.employee-dashboard-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(34, 139, 34, 0.07);
+  padding: 22px 32px 18px 32px;
+  min-width: 220px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+.employee-dashboard-card .dashboard-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+.employee-dashboard-card.total .dashboard-icon {
+  background: #23272e;
+  color: #fff;
+}
+.employee-dashboard-card.active .dashboard-icon {
+  background: #1a7f37;
+  color: #fff;
+}
+.employee-dashboard-card.inactive .dashboard-icon {
+  background: #e74c3c;
+  color: #fff;
+}
+.employee-dashboard-card.new .dashboard-icon {
+  background: #2186eb;
+  color: #fff;
+}
+.dashboard-label {
+  color: #888;
+  font-size: 1.01rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.dashboard-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #23272e;
+  margin-bottom: 2px;
+}
+.dashboard-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 0.98rem;
+  border-radius: 8px;
+  padding: 2px 12px;
+  font-weight: 600;
+  background: #f3e8fd;
+  color: #a259e6;
+}
+.dashboard-badge.up {
+  background: #f3e8fd;
+  color: #a259e6;
+}
+.employee-dashboard-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  margin-left: auto;
+}
+.dashboard-btn {
+  border-radius: 8px;
+  padding: 8px 22px;
+  font-size: 1.01rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.dashboard-btn.export {
+  background: #fff;
+  color: #23272e;
+  border: 1.5px solid #e6e6e6;
+}
+.dashboard-btn.export:hover {
+  background: #f7f9fa;
+}
+.dashboard-btn.add {
+  background: #ff6a00;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255, 106, 0, 0.1);
+}
+.dashboard-btn.add:hover {
+  background: #ff8c1a;
+}
+.employee-main-content {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+.employee-table-panel {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.employee-detail-slide {
+  width: 0;
+  opacity: 0;
+  transition:
+    width 0.3s,
+    opacity 0.3s;
+  overflow: hidden;
+}
+.employee-detail-slide.open {
+  width: 480px;
+  opacity: 1;
+  margin-left: 0;
+}
+@media (max-width: 1200px) {
+  .employee-main-content {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .employee-detail-slide.open {
+    width: 100vw;
+    margin-left: 0;
+  }
+}
+@media (max-width: 700px) {
+  .employee-dashboard-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .employee-dashboard-card {
+    min-width: unset;
+    width: 100%;
+    padding: 16px 12px 12px 12px;
+  }
+  .employee-main-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

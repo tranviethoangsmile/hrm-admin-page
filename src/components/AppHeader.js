@@ -83,7 +83,7 @@ const AppHeader = () => {
           onChange={handleChangeLanguage}
         >
           <option value="en">{t("en")}</option>
-          <option value="vn">{t("vi")}</option>
+          <option value="vi">{t("vi")}</option>
           <option value="jp">{t("jp")}</option>
           <option value="pt">{t("pt")}</option>
         </select>

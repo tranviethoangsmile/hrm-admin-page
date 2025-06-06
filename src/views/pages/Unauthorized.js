@@ -18,7 +18,7 @@ const Unauthorized = () => {
           className="mt-2 px-4 rounded-pill"
           onClick={() => navigate("/login")}
         >
-          Login
+          {t("login")}
         </CButton>
       </CAlert>
     </div>

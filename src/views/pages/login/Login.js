@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [user_name, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [badUserName, setBadUserName] = useState("");
@@ -93,21 +93,43 @@ const Login = () => {
         }
       } catch (error) {
         setVisibleAlert(true);
-        setAlertMessage("Đăng nhập thất bại. Vui lòng thử lại!");
+        setAlertMessage(t("loginFailed"));
       }
     }
+  };
+
+  const handleChangeLanguage = (e) => {
+    i18n.changeLanguage(e.target.value);
+    localStorage.setItem("i18nextLng", e.target.value);
   };
 
   return (
     <div className="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light position-relative">
       <div style={{ position: "fixed", top: 24, right: 32, zIndex: 10 }}>
-        <CFormSwitch
-          id="darkModeSwitchLogin"
-          label={darkMode ? t("darkModeOn") : t("darkModeOff")}
-          checked={darkMode}
-          onChange={() => setDarkMode((v) => !v)}
-          size="lg"
-        />
+        <div className="d-flex align-items-center gap-3">
+          <select
+            className="form-select form-select-sm w-auto"
+            style={{ minWidth: 110 }}
+            value={i18n.language}
+            onChange={handleChangeLanguage}
+          >
+            <option value="en">{t("en")}</option>
+            <option value="vi">{t("vi")}</option>
+            <option value="jp">{t("jp")}</option>
+            <option value="pt">{t("pt")}</option>
+          </select>
+          <CFormSwitch
+            id="darkModeSwitchLogin"
+            label={
+              <span style={{ color: darkMode ? undefined : "#222" }}>
+                {darkMode ? t("darkModeOn") : t("darkModeOff")}
+              </span>
+            }
+            checked={darkMode}
+            onChange={() => setDarkMode((v) => !v)}
+            size="lg"
+          />
+        </div>
       </div>
       <CContainer>
         <CRow className="justify-content-center">
@@ -124,7 +146,7 @@ const Login = () => {
                     className="fw-bold mt-2 mb-1"
                     style={{ color: "#1a7f37" }}
                   >
-                    {t("HRM Metal")}
+                    {t("hrmMetal")}
                   </h2>
                   <div className="text-muted mb-2">{t("loginSubtitle")}</div>
                 </div>

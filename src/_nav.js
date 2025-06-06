@@ -189,6 +189,127 @@ if (role === "ADMIN") {
       ],
     },
   ];
+} else if (role === "LEADER") {
+  _nav = [
+    {
+      component: CNavItem,
+      name: "dashboard",
+      to: "/dashboard",
+      icon: (
+        <CIcon
+          icon={cilSpeedometer}
+          customClassName="nav-icon"
+          style={iconColor}
+        />
+      ),
+    },
+    {
+      component: CNavItem,
+      name: "attendance",
+      to: "/attendance",
+      icon: (
+        <CIcon
+          icon={cilFingerprint}
+          customClassName="nav-icon"
+          style={iconColor}
+        />
+      ),
+    },
+    {
+      component: CNavItem,
+      name: "meals",
+      to: "/meals",
+      icon: (
+        <CIcon
+          icon={cilFastfood}
+          customClassName="nav-icon"
+          style={iconColor}
+        />
+      ),
+    },
+    {
+      component: CNavItem,
+      name: "employees",
+      to: "/employees",
+      icon: (
+        <CIcon icon={cilUser} customClassName="nav-icon" style={iconColor} />
+      ),
+    },
+    {
+      component: CNavItem,
+      name: "reports",
+      to: "/reports",
+      icon: (
+        <CIcon icon={cilChart} customClassName="nav-icon" style={iconColor} />
+      ),
+    },
+    {
+      component: CNavItem,
+      name: "overtimeRequest",
+      to: "/overtime-request",
+      icon: (
+        <CIcon icon={cilClock} customClassName="nav-icon" style={iconColor} />
+      ),
+    },
+    {
+      component: CNavItem,
+      name: "taskRequest",
+      to: "/task-request",
+      icon: (
+        <CIcon icon={cilList} customClassName="nav-icon" style={iconColor} />
+      ),
+    },
+    {
+      component: CNavItem,
+      name: "events",
+      to: "/events",
+      icon: (
+        <CIcon
+          icon={cilCalendar}
+          customClassName="nav-icon"
+          style={iconColor}
+        />
+      ),
+    },
+    {
+      component: CNavGroup,
+      name: "settings",
+      to: "/settings",
+      icon: (
+        <CIcon
+          icon={cilSettings}
+          customClassName="nav-icon"
+          style={iconColor}
+        />
+      ),
+      items: [
+        {
+          component: CNavItem,
+          name: "darkMode",
+          to: "/settings/dark-mode",
+          icon: (
+            <CIcon
+              icon={cilMoon}
+              customClassName="nav-icon"
+              style={iconColor}
+            />
+          ),
+        },
+        {
+          component: CNavItem,
+          name: "fontSize",
+          to: "/settings/font-size",
+          icon: (
+            <CIcon
+              icon={cilText}
+              customClassName="nav-icon"
+              style={iconColor}
+            />
+          ),
+        },
+      ],
+    },
+  ];
 } else {
   _nav = [
     {
