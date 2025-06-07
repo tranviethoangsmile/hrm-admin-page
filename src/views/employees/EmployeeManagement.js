@@ -563,138 +563,126 @@ const EmployeeManagement = () => {
                 >
                   {selectedUser.is_active ? t("active") : t("inactive")}
                 </CBadge>
-                <div className="mb-1 d-flex justify-content-center">
-                  <CBadge
-                    color="info"
-                    className="px-4 py-2 fs-6 fw-bold shadow-sm"
-                    style={{
-                      fontSize: 17,
-                      background: "linear-gradient(90deg,#e6f4ea,#d2f7e3)",
-                      color: "#1a7f37",
-                      borderRadius: 12,
-                      letterSpacing: 0.5,
-                      boxShadow: "0 2px 8px rgba(34,139,34,0.07)",
-                    }}
-                  >
-                    {selectedUser.department?.name}
-                  </CBadge>
-                </div>
               </div>
               <CRow className="g-3 mb-2">
                 {selectedUser.email && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("email")}</div>
-                    <div className="fw-semibold">{selectedUser.email}</div>
+                    <div className="profile-label">{t("email")}</div>
+                    <div className="profile-value">{selectedUser.email}</div>
                   </CCol>
                 )}
                 {selectedUser.phone && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("phone")}</div>
-                    <div className="fw-semibold">{selectedUser.phone}</div>
+                    <div className="profile-label">{t("phone")}</div>
+                    <div className="profile-value">{selectedUser.phone}</div>
                   </CCol>
                 )}
                 {selectedUser.dob && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("dob")}</div>
-                    <div className="fw-semibold">{selectedUser.dob}</div>
+                    <div className="profile-label">{t("dob")}</div>
+                    <div className="profile-value">{selectedUser.dob}</div>
                   </CCol>
                 )}
                 {selectedUser.gender && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("gender")}</div>
-                    <div className="fw-semibold">{selectedUser.gender}</div>
+                    <div className="profile-label">{t("gender")}</div>
+                    <div className="profile-value">{selectedUser.gender}</div>
                   </CCol>
                 )}
                 {selectedUser.address && (
                   <CCol xs={12}>
-                    <div className="text-muted small">{t("address")}</div>
-                    <div className="fw-semibold">{selectedUser.address}</div>
+                    <div className="profile-label">{t("address")}</div>
+                    <div className="profile-value">{selectedUser.address}</div>
                   </CCol>
                 )}
                 {selectedUser.cmnd && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("cmnd")}</div>
-                    <div className="fw-semibold">{selectedUser.cmnd}</div>
+                    <div className="profile-label">{t("cmnd")}</div>
+                    <div className="profile-value">{selectedUser.cmnd}</div>
                   </CCol>
                 )}
                 {selectedUser.cmnd_place && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("cmnd_place")}</div>
-                    <div className="fw-semibold">{selectedUser.cmnd_place}</div>
+                    <div className="profile-label">{t("cmnd_place")}</div>
+                    <div className="profile-value">
+                      {selectedUser.cmnd_place}
+                    </div>
                   </CCol>
                 )}
                 {selectedUser.cmnd_date && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("cmnd_date")}</div>
-                    <div className="fw-semibold">{selectedUser.cmnd_date}</div>
+                    <div className="profile-label">{t("cmnd_date")}</div>
+                    <div className="profile-value">
+                      {selectedUser.cmnd_date}
+                    </div>
                   </CCol>
                 )}
                 {selectedUser.begin_date && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("begin_date")}</div>
-                    <div className="fw-semibold">{selectedUser.begin_date}</div>
+                    <div className="profile-label">{t("begin_date")}</div>
+                    <div className="profile-value">
+                      {selectedUser.begin_date}
+                    </div>
                   </CCol>
                 )}
                 {selectedUser.role && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("role")}</div>
-                    <div className="fw-semibold">{selectedUser.role}</div>
+                    <div className="profile-label">{t("role")}</div>
+                    <div className="profile-value">{selectedUser.role}</div>
                   </CCol>
                 )}
                 {selectedUser.position && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("position")}</div>
-                    <div className="fw-semibold">{selectedUser.position}</div>
+                    <div className="profile-label">{t("position")}</div>
+                    <div className="profile-value">{selectedUser.position}</div>
                   </CCol>
                 )}
                 {selectedUser.salary_hourly && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("salary_hourly")}</div>
-                    <div className="fw-semibold">
+                    <div className="profile-label">{t("salary_hourly")}</div>
+                    <div className="profile-value">
                       {selectedUser.salary_hourly}
                     </div>
                   </CCol>
                 )}
                 {selectedUser.shift_night_pay && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">
-                      {t("shift_night_pay")}
-                    </div>
-                    <div className="fw-semibold">
+                    <div className="profile-label">{t("shift_night_pay")}</div>
+                    <div className="profile-value">
                       {selectedUser.shift_night_pay}
                     </div>
                   </CCol>
                 )}
                 {selectedUser.travel_allowance_pay && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">
+                    <div className="profile-label">
                       {t("travel_allowance_pay")}
                     </div>
-                    <div className="fw-semibold">
+                    <div className="profile-value">
                       {selectedUser.travel_allowance_pay}
                     </div>
                   </CCol>
                 )}
                 {selectedUser.paid_days && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("paid_days")}</div>
-                    <div className="fw-semibold">{selectedUser.paid_days}</div>
+                    <div className="profile-label">{t("paid_days")}</div>
+                    <div className="profile-value">
+                      {selectedUser.paid_days}
+                    </div>
                   </CCol>
                 )}
                 {typeof selectedUser.is_officer === "boolean" && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">{t("is_officer")}</div>
-                    <div className="fw-semibold">
+                    <div className="profile-label">{t("is_officer")}</div>
+                    <div className="profile-value">
                       {selectedUser.is_officer ? t("yes") : t("no")}
                     </div>
                   </CCol>
                 )}
                 {typeof selectedUser.is_offical_staff === "boolean" && (
                   <CCol xs={12} md={6}>
-                    <div className="text-muted small">
-                      {t("is_offical_staff")}
-                    </div>
-                    <div className="fw-semibold">
+                    <div className="profile-label">{t("is_offical_staff")}</div>
+                    <div className="profile-value">
                       {selectedUser.is_offical_staff ? t("yes") : t("no")}
                     </div>
                   </CCol>
@@ -702,11 +690,23 @@ const EmployeeManagement = () => {
                 {selectedUser.department_id && (
                   <CCol xs={12} md={6}>
                     <div className="text-muted small">{t("department_id")}</div>
-                    <div className="fw-semibold">
-                      {selectedUser.department?.name ||
-                        selectedUser.department_name ||
-                        getDepartmentName(selectedUser.department_id)}
-                    </div>
+                    <CBadge
+                      className="profile-department-badge"
+                      style={{
+                        background: "linear-gradient(90deg,#e6f4ea,#d2f7e3)",
+                        color: "#1a7f37",
+                        fontWeight: 700,
+                        fontSize: 16,
+                        borderRadius: 12,
+                        padding: "6px 24px",
+                        boxShadow: "0 2px 8px rgba(34,139,34,0.07)",
+                        letterSpacing: 0.5,
+                        marginTop: 4,
+                        display: "inline-block",
+                      }}
+                    >
+                      {selectedUser.department?.name}
+                    </CBadge>
                   </CCol>
                 )}
               </CRow>
