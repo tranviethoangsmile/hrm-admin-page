@@ -36,8 +36,21 @@ import {
   cilUserFollow,
   cilUserUnfollow,
   cilUserPlus,
+  cilTrash,
+  cilPencil,
+  cilCamera,
 } from "@coreui/icons";
 import UserCreateModal from "../departments/UserCreateModal";
+import AppToast from "../../components/AppToast";
+import {
+  UPLOAD_AVATAR,
+  BASE_URL,
+  PORT,
+  API,
+  VERSION,
+  V1,
+  USER_URL,
+} from "../../constants";
 
 const statusBadge = (status, t) => {
   if (status === true || status === "active" || status === t("confirmed"))
@@ -92,6 +105,16 @@ const EmployeeManagement = () => {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [toast, setToast] = useState({
+    visible: false,
+    message: "",
+    type: "success",
+  });
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const ROLES = [
     { value: "STAFF", label: t("ROLE_STAFF") },
@@ -114,7 +137,7 @@ const EmployeeManagement = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          "http://54.200.248.63:80/api/version/v1/users"
+          `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
         );
         setUsers(res.data?.data || []);
       } catch (e) {
@@ -125,7 +148,7 @@ const EmployeeManagement = () => {
     const fetchDepartments = async () => {
       try {
         const res = await axios.get(
-          "http://54.200.248.63:80/api/version/v1/department/getall"
+          `${BASE_URL}${PORT}${API}${VERSION}${V1}/department/getall`
         );
         setDepartments(res.data?.data || []);
       } catch (e) {
@@ -142,37 +165,37 @@ const EmployeeManagement = () => {
   };
 
   const handleSelectUser = (user) => {
-    if (selectedUser && selectedUser.id === user.id) {
-      setSelectedUser(null);
-      setForm(null);
-      setEditing(false);
-      setError("");
-      return;
-    }
     setSelectedUser(user);
-    setForm(user);
+    setForm({ ...user, department_id: String(user.department_id || "") });
     setEditing(false);
     setError("");
   };
 
   const handleEdit = () => {
+    let depId = selectedUser.department_id;
+    if (!departments.some((dep) => String(dep.id) === depId)) {
+      depId = departments.length > 0 ? String(departments[0].id) : "";
+    }
     setEditing(true);
-    setForm(selectedUser);
+    setForm({ ...selectedUser, department_id: depId });
     setError("");
+    setShowEditModal(true);
   };
 
-  const handleCancel = () => {
+  const handleCancelEditModal = () => {
+    setShowEditModal(false);
     setEditing(false);
     setForm(selectedUser);
     setError("");
   };
 
-  const handleSave = async () => {
+  const handleSaveEditModal = async () => {
     setError("");
-    // Validate required fields
     const requiredFields = [
+      "id",
       "name",
       "email",
+      "phone",
       "user_name",
       "dob",
       "employee_id",
@@ -188,32 +211,134 @@ const EmployeeManagement = () => {
     for (const field of requiredFields) {
       if (!form[field]) {
         setError(t("requiredFields") + `: ${t(field)}`);
+        setToast({
+          visible: true,
+          message: t("requiredFields") + `: ${t(field)}`,
+          type: "error",
+        });
         return;
       }
     }
     try {
+      const { avatar, department, ...formData } = form;
       const res = await axios.put(
-        `http://54.200.248.63:80/api/version/v1/users/${form.id}`,
-        { ...form },
+        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`,
+        formData,
         { headers: { "Content-Type": "application/json" } }
       );
       if (!res.data.success) {
         setError(res.data.message || t("updateUserFailed"));
+        setToast({
+          visible: true,
+          message: res.data.message || t("updateUserFailed"),
+          type: "error",
+        });
         return;
       }
-      setUsers((users) =>
-        users.map((u) => (u.id === form.id ? res.data.data : u))
+      const usersRes = await axios.get(
+        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
       );
-      setSelectedUser(res.data.data);
-      setForm(res.data.data);
-      setEditing(false);
+      setUsers(usersRes.data?.data || []);
+      const found = (usersRes.data?.data || []).find((u) => u.id === form.id);
+      if (found) {
+        setSelectedUser(found);
+        setForm({ ...found, department_id: String(found.department_id || "") });
+        setEditing(false);
+        setError("");
+      }
+      setShowEditModal(false);
+      setToast({
+        visible: true,
+        message: t("updateUserSuccess"),
+        type: "success",
+      });
     } catch (e) {
       setError(e?.response?.data?.message || t("updateUserFailed"));
+      setToast({
+        visible: true,
+        message: e?.response?.data?.message || t("updateUserFailed"),
+        type: "error",
+      });
     }
   };
 
   const handleInputChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleDelete = async () => {
+    if (!selectedUser) return;
+    setShowDeleteModal(false);
+    try {
+      await axios.delete(
+        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}/${selectedUser.id}`
+      );
+      setUsers((users) => users.filter((u) => u.id !== selectedUser.id));
+      setSelectedUser(null);
+      setForm(null);
+      setEditing(false);
+      setError("");
+      setToast({
+        visible: true,
+        message: t("deleteUserSuccess") || t("user.create.toast.success"),
+        type: "success",
+      });
+    } catch (e) {
+      setError(t("deleteUserFailed") || "Delete user failed");
+    }
+  };
+
+  const handleAvatarChange = async () => {
+    if (!avatarFile || !selectedUser) return;
+    setAvatarUploading(true);
+    const formData = new FormData();
+    formData.append("avatar", avatarFile);
+    formData.append("id", selectedUser.id);
+    try {
+      const res = await axios.post(
+        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}${UPLOAD_AVATAR}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      if (res.data?.success) {
+        const usersRes = await axios.get(
+          `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
+        );
+        setUsers(usersRes.data?.data || []);
+        const found = (usersRes.data?.data || []).find(
+          (u) => u.id === selectedUser.id
+        );
+        if (found) {
+          setSelectedUser(found);
+          setForm({
+            ...found,
+            department_id: String(found.department_id || ""),
+          });
+          setEditing(false);
+          setError("");
+        }
+        setToast({
+          visible: true,
+          message: t("updateAvatarSuccess") || "Avatar updated successfully!",
+          type: "success",
+        });
+        setShowAvatarModal(false);
+        setAvatarFile(null);
+      } else {
+        setToast({
+          visible: true,
+          message: t("updateAvatarFailed") || "Update avatar failed!",
+          type: "error",
+        });
+      }
+    } catch (e) {
+      setToast({
+        visible: true,
+        message: t("updateAvatarFailed") || "Update avatar failed!",
+        type: "error",
+      });
+    }
+    setAvatarUploading(false);
   };
 
   // Dashboard stats
@@ -371,107 +496,235 @@ const EmployeeManagement = () => {
         <div className={`employee-detail-slide${selectedUser ? " open" : ""}`}>
           {selectedUser ? (
             <CCard
-              className="mb-4 p-4"
-              style={{ maxWidth: 480, marginLeft: "auto" }}
+              className="mb-4 p-4 shadow-lg border-0 employee-detail-card"
+              style={{ maxWidth: 480, marginLeft: "auto", borderRadius: 24 }}
             >
-              <CRow className="align-items-center mb-3">
-                <CCol xs={4} className="text-center">
-                  <CAvatar
-                    src={selectedUser.avatar || "/avatar-empty.png"}
-                    size="xxl"
+              <div
+                className="d-flex flex-column align-items-center mb-4 position-relative"
+                style={{ width: 140, height: 140, margin: "0 auto" }}
+              >
+                <CAvatar
+                  src={selectedUser.avatar || "/avatar-empty.png"}
+                  size="3xl"
+                  className="shadow mb-3"
+                  style={{
+                    width: 140,
+                    height: 140,
+                    border: "4px solid #1a7f37",
+                    objectFit: "cover",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    zIndex: 1,
+                  }}
+                />
+                <div
+                  className="avatar-hover-overlay"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: 140,
+                    height: 140,
+                    borderRadius: "50%",
+                    background: "rgba(0,0,0,0.45)",
+                    color: "#fff",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    opacity: 1,
+                    transition: "opacity 0.2s",
+                    zIndex: 2,
+                  }}
+                  onClick={() => setShowAvatarModal(true)}
+                >
+                  <CIcon
+                    icon={cilCamera}
+                    size="xl"
+                    style={{ marginBottom: 8 }}
                   />
-                </CCol>
-                <CCol xs={8}>
-                  <div className="fw-bold fs-4 mb-1">{selectedUser.name}</div>
-                  <div className="text-muted mb-1">
-                    Employee ID: {selectedUser.employee_id}
+                  <div style={{ fontWeight: 600, fontSize: 16 }}>
+                    {t("updateAvatar")}
                   </div>
+                </div>
+              </div>
+              <div className="d-flex flex-column align-items-center mb-4">
+                <div className="fw-bold fs-3 mb-1 text-center text-primary">
+                  {selectedUser.name}
+                </div>
+                <div className="text-muted mb-1 fs-6">
+                  {t("employee_id")}: {selectedUser.employee_id}
+                </div>
+                <CBadge
+                  color={selectedUser.is_active ? "success" : "danger"}
+                  className="mb-2 px-3 py-2 fs-6"
+                >
+                  {selectedUser.is_active ? t("active") : t("inactive")}
+                </CBadge>
+                <div className="mb-1 d-flex justify-content-center">
                   <CBadge
-                    color={selectedUser.is_active ? "success" : "danger"}
-                    className="mb-2"
+                    color="info"
+                    className="px-4 py-2 fs-6 fw-bold shadow-sm"
+                    style={{
+                      fontSize: 17,
+                      background: "linear-gradient(90deg,#e6f4ea,#d2f7e3)",
+                      color: "#1a7f37",
+                      borderRadius: 12,
+                      letterSpacing: 0.5,
+                      boxShadow: "0 2px 8px rgba(34,139,34,0.07)",
+                    }}
                   >
-                    {selectedUser.is_active ? "Working" : "Resigned"}
+                    {selectedUser.department?.name}
                   </CBadge>
-                  <div className="mb-1">
-                    <CBadge color="info">
-                      {getDepartmentName(selectedUser.department_id)}
-                    </CBadge>
-                  </div>
-                </CCol>
+                </div>
+              </div>
+              <CRow className="g-3 mb-2">
+                {selectedUser.email && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("email")}</div>
+                    <div className="fw-semibold">{selectedUser.email}</div>
+                  </CCol>
+                )}
+                {selectedUser.phone && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("phone")}</div>
+                    <div className="fw-semibold">{selectedUser.phone}</div>
+                  </CCol>
+                )}
+                {selectedUser.dob && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("dob")}</div>
+                    <div className="fw-semibold">{selectedUser.dob}</div>
+                  </CCol>
+                )}
+                {selectedUser.gender && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("gender")}</div>
+                    <div className="fw-semibold">{selectedUser.gender}</div>
+                  </CCol>
+                )}
+                {selectedUser.address && (
+                  <CCol xs={12}>
+                    <div className="text-muted small">{t("address")}</div>
+                    <div className="fw-semibold">{selectedUser.address}</div>
+                  </CCol>
+                )}
+                {selectedUser.cmnd && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("cmnd")}</div>
+                    <div className="fw-semibold">{selectedUser.cmnd}</div>
+                  </CCol>
+                )}
+                {selectedUser.cmnd_place && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("cmnd_place")}</div>
+                    <div className="fw-semibold">{selectedUser.cmnd_place}</div>
+                  </CCol>
+                )}
+                {selectedUser.cmnd_date && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("cmnd_date")}</div>
+                    <div className="fw-semibold">{selectedUser.cmnd_date}</div>
+                  </CCol>
+                )}
+                {selectedUser.begin_date && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("begin_date")}</div>
+                    <div className="fw-semibold">{selectedUser.begin_date}</div>
+                  </CCol>
+                )}
+                {selectedUser.role && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("role")}</div>
+                    <div className="fw-semibold">{selectedUser.role}</div>
+                  </CCol>
+                )}
+                {selectedUser.position && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("position")}</div>
+                    <div className="fw-semibold">{selectedUser.position}</div>
+                  </CCol>
+                )}
+                {selectedUser.salary_hourly && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("salary_hourly")}</div>
+                    <div className="fw-semibold">
+                      {selectedUser.salary_hourly}
+                    </div>
+                  </CCol>
+                )}
+                {selectedUser.shift_night_pay && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">
+                      {t("shift_night_pay")}
+                    </div>
+                    <div className="fw-semibold">
+                      {selectedUser.shift_night_pay}
+                    </div>
+                  </CCol>
+                )}
+                {selectedUser.travel_allowance_pay && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">
+                      {t("travel_allowance_pay")}
+                    </div>
+                    <div className="fw-semibold">
+                      {selectedUser.travel_allowance_pay}
+                    </div>
+                  </CCol>
+                )}
+                {selectedUser.paid_days && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("paid_days")}</div>
+                    <div className="fw-semibold">{selectedUser.paid_days}</div>
+                  </CCol>
+                )}
+                {typeof selectedUser.is_officer === "boolean" && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("is_officer")}</div>
+                    <div className="fw-semibold">
+                      {selectedUser.is_officer ? t("yes") : t("no")}
+                    </div>
+                  </CCol>
+                )}
+                {typeof selectedUser.is_offical_staff === "boolean" && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">
+                      {t("is_offical_staff")}
+                    </div>
+                    <div className="fw-semibold">
+                      {selectedUser.is_offical_staff ? t("yes") : t("no")}
+                    </div>
+                  </CCol>
+                )}
+                {selectedUser.department_id && (
+                  <CCol xs={12} md={6}>
+                    <div className="text-muted small">{t("department_id")}</div>
+                    <div className="fw-semibold">
+                      {selectedUser.department?.name ||
+                        selectedUser.department_name ||
+                        getDepartmentName(selectedUser.department_id)}
+                    </div>
+                  </CCol>
+                )}
               </CRow>
-              <CRow className="g-2">
-                <CCol xs={6}>
-                  <div className="text-muted small">Email</div>
-                  <div>{selectedUser.email || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Phone</div>
-                  <div>{selectedUser.phone || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">DOB</div>
-                  <div>{selectedUser.dob || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Gender</div>
-                  <div>{selectedUser.gender || "-"}</div>
-                </CCol>
-                <CCol xs={12}>
-                  <div className="text-muted small">Address</div>
-                  <div>{selectedUser.address || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">CMND</div>
-                  <div>{selectedUser.cmnd || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">CMND Place</div>
-                  <div>{selectedUser.cmnd_place || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">CMND Date</div>
-                  <div>{selectedUser.cmnd_date || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Begin Date</div>
-                  <div>{selectedUser.begin_date || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Role</div>
-                  <div>{selectedUser.role || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Position</div>
-                  <div>{selectedUser.position || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Salary Hourly</div>
-                  <div>{selectedUser.salary_hourly || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Shift Night Pay</div>
-                  <div>{selectedUser.shift_night_pay || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Travel Allowance Pay</div>
-                  <div>{selectedUser.travel_allowance_pay || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Paid Days</div>
-                  <div>{selectedUser.paid_days || "-"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Is Officer</div>
-                  <div>{selectedUser.is_officer ? "yes" : "no"}</div>
-                </CCol>
-                <CCol xs={6}>
-                  <div className="text-muted small">Official Staff</div>
-                  <div>{selectedUser.is_offical_staff ? "yes" : "no"}</div>
-                </CCol>
-              </CRow>
-              <div className="d-flex justify-content-end mt-3">
+              {error && (
+                <div className="text-danger mt-2 mb-2 text-center">{error}</div>
+              )}
+              <div className="d-flex justify-content-end gap-2 mt-4">
+                <CButton
+                  color="danger"
+                  variant="outline"
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  <CIcon icon={cilTrash} className="me-2" />
+                  {t("delete")}
+                </CButton>
                 <CButton color="primary" onClick={handleEdit}>
-                  Update
+                  <CIcon icon={cilPencil} className="me-2" />
+                  {t("update")}
                 </CButton>
               </div>
             </CCard>
@@ -488,12 +741,324 @@ const EmployeeManagement = () => {
         visible={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         departmentList={departments}
-        onCreated={() => {
+        onCreated={async (createdUser) => {
           setShowCreateModal(false);
-          axios
-            .get("http://54.200.248.63:80/api/version/v1/users")
-            .then((res) => setUsers(res.data?.data || []));
+          const res = await axios.get(
+            `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
+          );
+          setUsers(res.data?.data || []);
+          // Focus vào user vừa tạo
+          const found = (res.data?.data || []).find(
+            (u) => u.id === createdUser?.id
+          );
+          if (found) {
+            setSelectedUser(found);
+            setForm({
+              ...found,
+              department_id: String(found.department_id || ""),
+            });
+            setEditing(false);
+            setError("");
+          }
         }}
+      />
+      {/* Delete Confirmation Modal */}
+      <CModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        backdrop="static"
+        alignment="center"
+      >
+        <CModalHeader className="bg-danger bg-gradient border-0 rounded-top-4 text-white align-items-center">
+          <CIcon
+            icon={cilTrash}
+            size="xxl"
+            className="me-3"
+            style={{ color: "#fff" }}
+          />
+          <div className="fw-bold fs-4">
+            {t("delete") + " " + t("employee")}
+          </div>
+        </CModalHeader>
+        <CModalBody className="text-center py-4">
+          <div className="fs-5 mb-2">{t("deleteUserConfirm")}</div>
+          <div className="text-danger fw-bold fs-4 mb-2">
+            {selectedUser?.name}
+          </div>
+        </CModalBody>
+        <CModalFooter className="bg-light rounded-bottom-4 border-0 d-flex justify-content-end gap-2">
+          <CButton
+            color="secondary"
+            variant="outline"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            {t("cancel")}
+          </CButton>
+          <CButton color="danger" onClick={handleDelete}>
+            <CIcon icon={cilTrash} className="me-2" />
+            {t("delete")}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      {/* Avatar Upload Modal */}
+      <CModal
+        visible={showAvatarModal}
+        onClose={() => setShowAvatarModal(false)}
+        alignment="center"
+        backdrop="static"
+      >
+        <CModalHeader className="bg-success bg-gradient border-0 rounded-top-4 text-white align-items-center">
+          <CIcon
+            icon={cilPencil}
+            size="xxl"
+            className="me-3"
+            style={{ color: "#fff" }}
+          />
+          <div className="fw-bold fs-4">{t("updateAvatar")}</div>
+        </CModalHeader>
+        <CModalBody className="text-center py-4">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setAvatarFile(e.target.files[0])}
+            className="form-control mb-3"
+            disabled={avatarUploading}
+          />
+          {avatarFile && (
+            <img
+              src={URL.createObjectURL(avatarFile)}
+              alt="preview"
+              style={{
+                width: 120,
+                height: 120,
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "2px solid #1a7f37",
+              }}
+              className="mb-2"
+            />
+          )}
+        </CModalBody>
+        <CModalFooter className="bg-light rounded-bottom-4 border-0 d-flex justify-content-end gap-2">
+          <CButton
+            color="secondary"
+            variant="outline"
+            onClick={() => setShowAvatarModal(false)}
+            disabled={avatarUploading}
+          >
+            {t("cancel")}
+          </CButton>
+          <CButton
+            color="success"
+            onClick={handleAvatarChange}
+            disabled={!avatarFile || avatarUploading}
+          >
+            {avatarUploading ? t("creating") : t("updateAvatar")}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      {/* Modal Edit User */}
+      <CModal
+        visible={showEditModal}
+        onClose={handleCancelEditModal}
+        alignment="center"
+        backdrop="static"
+      >
+        <CModalHeader>{t("update") + " " + t("employee")}</CModalHeader>
+        <CModalBody>
+          <CRow className="g-3 mb-2">
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("name")}</CFormLabel>
+              <CFormInput
+                value={form?.name || ""}
+                onChange={(e) => handleInputChange("name", e.target.value)}
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("email")}</CFormLabel>
+              <CFormInput
+                value={form?.email || ""}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("user_name")}</CFormLabel>
+              <CFormInput
+                value={form?.user_name || ""}
+                onChange={(e) => handleInputChange("user_name", e.target.value)}
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("dob")}</CFormLabel>
+              <CFormInput
+                type="date"
+                value={form?.dob || ""}
+                onChange={(e) => handleInputChange("dob", e.target.value)}
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("employee_id")}</CFormLabel>
+              <CFormInput
+                value={form?.employee_id || ""}
+                onChange={(e) =>
+                  handleInputChange("employee_id", e.target.value)
+                }
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("department_id")}</CFormLabel>
+              <CFormSelect
+                value={String(form?.department_id || "")}
+                onChange={(e) =>
+                  handleInputChange("department_id", e.target.value)
+                }
+                required
+              >
+                <option value="">{t("selectDepartment")}</option>
+                {departments.map((dep) => (
+                  <option key={dep.id} value={String(dep.id)}>
+                    {dep.name}
+                  </option>
+                ))}
+              </CFormSelect>
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("role")}</CFormLabel>
+              <CFormSelect
+                value={form?.role || ""}
+                onChange={(e) => handleInputChange("role", e.target.value)}
+                required
+              >
+                {ROLES.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </CFormSelect>
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("position")}</CFormLabel>
+              <CFormSelect
+                value={form?.position || ""}
+                onChange={(e) => handleInputChange("position", e.target.value)}
+                required
+              >
+                {POSITIONS.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.label}
+                  </option>
+                ))}
+              </CFormSelect>
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("salary_hourly")}</CFormLabel>
+              <CFormInput
+                type="number"
+                value={form?.salary_hourly || ""}
+                onChange={(e) =>
+                  handleInputChange("salary_hourly", e.target.value)
+                }
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("travel_allowance_pay")}</CFormLabel>
+              <CFormInput
+                type="number"
+                value={form?.travel_allowance_pay || ""}
+                onChange={(e) =>
+                  handleInputChange("travel_allowance_pay", e.target.value)
+                }
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("shift_night_pay")}</CFormLabel>
+              <CFormInput
+                type="number"
+                value={form?.shift_night_pay || ""}
+                onChange={(e) =>
+                  handleInputChange("shift_night_pay", e.target.value)
+                }
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("paid_days")}</CFormLabel>
+              <CFormInput
+                type="number"
+                value={form?.paid_days || ""}
+                onChange={(e) => handleInputChange("paid_days", e.target.value)}
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("begin_date")}</CFormLabel>
+              <CFormInput
+                type="date"
+                value={form?.begin_date || ""}
+                onChange={(e) =>
+                  handleInputChange("begin_date", e.target.value)
+                }
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("phone")}</CFormLabel>
+              <CFormInput
+                value={form?.phone || ""}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
+                required
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("is_officer")}</CFormLabel>
+              <CFormSwitch
+                checked={!!form?.is_officer}
+                onChange={(e) =>
+                  handleInputChange("is_officer", e.target.checked)
+                }
+                label={form?.is_officer ? t("yes") : t("no")}
+              />
+            </CCol>
+            <CCol xs={12} md={6}>
+              <CFormLabel>{t("is_offical_staff")}</CFormLabel>
+              <CFormSwitch
+                checked={!!form?.is_offical_staff}
+                onChange={(e) =>
+                  handleInputChange("is_offical_staff", e.target.checked)
+                }
+                label={form?.is_offical_staff ? t("yes") : t("no")}
+              />
+            </CCol>
+          </CRow>
+          {error && (
+            <div className="text-danger mt-2 mb-2 text-center">{error}</div>
+          )}
+        </CModalBody>
+        <CModalFooter className="bg-light rounded-bottom-4 border-0 d-flex justify-content-end gap-2">
+          <CButton
+            color="secondary"
+            variant="outline"
+            onClick={handleCancelEditModal}
+          >
+            {t("cancel")}
+          </CButton>
+          <CButton color="primary" onClick={handleSaveEditModal}>
+            {t("save")}
+          </CButton>
+        </CModalFooter>
+      </CModal>
+      <AppToast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((t) => ({ ...t, visible: false }))}
       />
     </div>
   );
