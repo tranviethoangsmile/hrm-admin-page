@@ -310,7 +310,7 @@ if (role === "ADMIN") {
       ],
     },
   ];
-} else {
+} else if (role === "STAFF") {
   _nav = [
     {
       component: CNavItem,
@@ -419,6 +419,8 @@ if (role === "ADMIN") {
       ],
     },
   ];
+} else {
+  _nav = [];
 }
 
 export default _nav;
