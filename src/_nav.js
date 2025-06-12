@@ -21,6 +21,8 @@ import {
   cilText,
   cilBell,
   cilQrCode,
+  cilShieldAlt,
+  cilStar,
 } from "@coreui/icons";
 import { CNavItem, CNavGroup } from "@coreui/react";
 
@@ -131,7 +133,7 @@ if (role === "ADMIN") {
       ),
     },
     {
-      component: CNavItem,
+      component: CNavGroup,
       name: "events",
       to: "/events",
       icon: (
@@ -141,6 +143,44 @@ if (role === "ADMIN") {
           style={iconColor}
         />
       ),
+      items: [
+        {
+          component: CNavItem,
+          name: "create_and_manage_events",
+          to: "/events",
+          icon: (
+            <CIcon
+              icon={cilCalendar}
+              customClassName="nav-icon"
+              style={iconColor}
+            />
+          ),
+        },
+        {
+          component: CNavItem,
+          name: "safety_events_short",
+          to: "/events/safety",
+          icon: (
+            <CIcon
+              icon={cilShieldAlt}
+              customClassName="nav-icon"
+              style={iconColor}
+            />
+          ),
+        },
+        {
+          component: CNavItem,
+          name: "normal_events_short",
+          to: "/events/normal",
+          icon: (
+            <CIcon
+              icon={cilStar}
+              customClassName="nav-icon"
+              style={iconColor}
+            />
+          ),
+        },
+      ],
     },
     {
       component: CNavItem,

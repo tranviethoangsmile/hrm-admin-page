@@ -109,6 +109,16 @@ const routes = [
     element: AdminInformationManagement,
   },
   { path: "/events", name: "Quản lý sự kiện", element: AdminEventManagement },
+  {
+    path: "/events/safety",
+    name: "Sự kiện an toàn",
+    element: AdminEventManagement,
+  },
+  {
+    path: "/events/normal",
+    name: "Sự kiện thường",
+    element: AdminEventManagement,
+  },
   { path: "/checkin", name: "Checkin", element: Checkin },
   { path: "/order", name: "Order Management", element: OrderManagement },
 ];

@@ -46,6 +46,7 @@ export const AppSidebarNav = ({ items }) => {
           <CNavLink
             {...(rest.to && { as: NavLink })}
             {...rest}
+            {...(indent ? { end: true } : {})}
             className="sidebar-nav-link px-4 py-3 my-1 rounded-3 fw-medium d-flex align-items-center gap-2"
           >
             {navLink(name, icon, badge, indent)}
