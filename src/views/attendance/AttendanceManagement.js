@@ -25,11 +25,7 @@ import {
 import CIcon from "@coreui/icons-react";
 import { cilCircle, cilX } from "@coreui/icons";
 import {
-  BASE_URL,
-  V1,
-  VERSION,
-  API,
-  PORT,
+  buildApiUrl,
   CHECKIN,
   GET_CHECKIN_IN_DATE_OF_POSITION,
   SEARCH,
@@ -63,7 +59,7 @@ const AttendanceManagement = () => {
     };
     try {
       const response = await axios.post(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${CHECKIN}${GET_CHECKIN_IN_DATE_OF_POSITION}`,
+        buildApiUrl(CHECKIN, GET_CHECKIN_IN_DATE_OF_POSITION),
         field
       );
       if (response.data.success) {
@@ -86,7 +82,7 @@ const AttendanceManagement = () => {
         date: moment(startDate).format("YYYY-MM-DD"),
       };
       const checkin_detail_of_user = await axios.post(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${CHECKIN}${SEARCH}`,
+        buildApiUrl(CHECKIN, SEARCH),
         field
       );
       if (checkin_detail_of_user?.data.success) {

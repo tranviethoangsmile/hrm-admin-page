@@ -1,94 +1,77 @@
-import React, { useEffect, useRef } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  CContainer,
-  CDropdown,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-  CHeader,
-  CHeaderNav,
-  CHeaderToggler,
-  CNavLink,
-  CNavItem,
-  useColorModes,
-} from "@coreui/react";
-import CIcon from "@coreui/icons-react";
-import {
-  cilBell,
-  cilContrast,
-  cilEnvelopeOpen,
-  cilList,
-  cilMenu,
-  cilMoon,
-  cilSun,
-} from "@coreui/icons";
+import React from "react";
 import { useTranslation } from "react-i18next";
+import CIcon from "@coreui/icons-react";
+import { cilCalendar, cilGlobeAlt, cilLocationPin, cilMenu } from "@coreui/icons";
+import { CHeaderToggler } from "@coreui/react";
+import { useDispatch, useSelector } from "react-redux";
 
-import { AppBreadcrumb } from "./index";
 import { AppHeaderDropdown } from "./header/index";
 import logo from "../../public/logo-metal.png";
 
 const AppHeader = () => {
-  const headerRef = useRef();
-  const { colorMode, setColorMode } = useColorModes(
-    "coreui-free-react-admin-template-theme"
-  );
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
-  const [user, setUser] = React.useState({});
-
-  React.useEffect(() => {
-    const userData = JSON.parse(sessionStorage.getItem("userIF"));
-    setUser(userData || {});
-    // Lấy ngôn ngữ từ localStorage nếu có
-    const lang = localStorage.getItem("i18nextLng");
-    if (lang && lang !== i18n.language) {
-      i18n.changeLanguage(lang);
-    }
-  }, []);
+  const user = JSON.parse(sessionStorage.getItem("userIF")) || {};
+  const todayLabel = new Intl.DateTimeFormat("vi-VN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date());
 
   const handleChangeLanguage = (e) => {
     i18n.changeLanguage(e.target.value);
     localStorage.setItem("i18nextLng", e.target.value);
   };
 
-  useEffect(() => {
-    document.addEventListener("scroll", () => {
-      headerRef.current &&
-        headerRef.current.classList.toggle(
-          "shadow-sm",
-          document.documentElement.scrollTop > 0
-        );
-    });
-  }, []);
-
   return (
-    <header className="app-header bg-white shadow-sm rounded-4 px-4 py-2 mb-3 d-flex align-items-center justify-content-between">
-      <div className="d-flex align-items-center gap-3">
-        <span
-          className="fw-bold fs-4"
-          style={{ color: "#1a7f37", letterSpacing: 1 }}
-        >
-          {t("HRM Metal")}
-        </span>
-      </div>
-      <div className="d-flex align-items-center gap-3">
-        <select
-          className="form-select form-select-sm w-auto"
-          style={{ minWidth: 110 }}
-          value={i18n.language}
-          onChange={handleChangeLanguage}
-        >
-          <option value="en">{t("en")}</option>
-          <option value="vi">{t("vi")}</option>
-          <option value="jp">{t("jp")}</option>
-          <option value="pt">{t("pt")}</option>
-        </select>
-        <span className="fw-semibold text-secondary">{t("welcome")}</span>
-        <AppHeaderDropdown user={user} />
+    <header className="app-header content-panel">
+      <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 gap-lg-4">
+        <div className="app-header__brand">
+          <CHeaderToggler
+            className="d-lg-none"
+            onClick={() => dispatch({ type: "set", sidebarShow: !sidebarShow })}
+          >
+            <CIcon icon={cilMenu} size="lg" />
+          </CHeaderToggler>
+          <div className="app-header__logo">
+            <img src={logo} alt="HRM Metal" style={{ width: "100%", height: "100%" }} />
+          </div>
+          <div>
+            <span className="app-header__eyebrow">HRM Pro</span>
+            <h1 className="app-header__title">{t("hrmMetal") || "HRM Metal"}</h1>
+            <div className="small text-body-secondary">
+              Quản lý nhân sự — chấm công và vận hành
+            </div>
+          </div>
+        </div>
+
+        <div className="app-header__meta">
+          <div className="app-chip">
+            <CIcon icon={cilLocationPin} />
+            <span>{user?.position || "Factory line"}</span>
+          </div>
+          <div className="app-chip app-chip--accent">
+            <CIcon icon={cilCalendar} />
+            <span>{todayLabel}</span>
+          </div>
+          <div className="app-chip app-chip--select">
+            <CIcon icon={cilGlobeAlt} className="ms-3" />
+            <select
+              className="form-select form-select-sm"
+              value={i18n.language}
+              onChange={handleChangeLanguage}
+              aria-label="Language"
+            >
+              <option value="en">{t("en")}</option>
+              <option value="vi">{t("vi")}</option>
+              <option value="jp">{t("jp")}</option>
+              <option value="pt">{t("pt")}</option>
+            </select>
+          </div>
+          <AppHeaderDropdown user={user} />
+        </div>
       </div>
     </header>
   );

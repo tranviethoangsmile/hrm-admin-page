@@ -1,30 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  CAlert,
   CButton,
-  CCard,
-  CCardBody,
-  CCol,
-  CContainer,
   CForm,
   CFormInput,
-  CRow,
-  CAlert,
-  CFormSwitch,
+  CSpinner,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilLockLocked, cilUser } from "@coreui/icons";
-import logo from "../../../../public/logo-metal.png";
 import {
-  BASE_URL,
-  V1,
-  VERSION,
-  LOGIN_URL,
-  API,
-  PORT,
-} from "../../../constants";
+  cilChartPie,
+  cilFingerprint,
+  cilGlobeAlt,
+  cilLockLocked,
+  cilShieldAlt,
+  cilUser,
+} from "@coreui/icons";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+
+import logo from "../../../../public/logo-metal.png";
+import { buildApiUrl, LOGIN_URL, LOGIN_WEB } from "../../../constants";
+
+const LOGIN_ENDPOINT = buildApiUrl(LOGIN_URL, LOGIN_WEB);
+
+const HIGHLIGHTS = [
+  {
+    icon: cilChartPie,
+    titleKey: "login.highlightLive.title",
+    textKey: "login.highlightLive.text",
+  },
+  {
+    icon: cilShieldAlt,
+    titleKey: "login.highlightFloor.title",
+    textKey: "login.highlightFloor.text",
+  },
+  {
+    icon: cilFingerprint,
+    titleKey: "login.highlightRoles.title",
+    textKey: "login.highlightRoles.text",
+  },
+];
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,21 +51,19 @@ const Login = () => {
   const [badPassword, setBadPassword] = useState("");
   const [visibleAlert, setVisibleAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(
     () => localStorage.getItem("darkMode") === "true"
   );
 
   useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
+    document.body.classList.toggle("dark-mode", darkMode);
     localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
 
   const validate = () => {
     let isValid = true;
+
     if (user_name === "") {
       setBadUserName(t("login.usernameRequired"));
       isValid = false;
@@ -59,6 +73,7 @@ const Login = () => {
     } else {
       setBadUserName("");
     }
+
     if (password === "") {
       setBadPassword(t("login.passwordRequired"));
       isValid = false;
@@ -68,33 +83,44 @@ const Login = () => {
     } else {
       setBadPassword("");
     }
+
     return isValid;
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      try {
-        const respone = await axios.post(
-          `${BASE_URL}${PORT}${API}${VERSION}${V1}${LOGIN_URL}`,
-          {
-            user_name,
-            password,
-          }
-        );
-        if (!respone?.data?.success) {
-          setVisibleAlert(true);
-          setAlertMessage(respone?.data?.message);
-        } else {
-          sessionStorage.setItem("isLoggedIn", true);
-          sessionStorage.setItem("token", respone?.data?.token);
-          sessionStorage.setItem("userIF", JSON.stringify(respone?.data?.data));
-          navigate("/dashboard", { replace: true });
-        }
-      } catch (error) {
+
+    if (!validate()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const respone = await axios.post(LOGIN_ENDPOINT, {
+        user_name,
+        password,
+      });
+
+      if (!respone?.data?.success) {
         setVisibleAlert(true);
-        setAlertMessage(t("loginFailed"));
+        setAlertMessage(respone?.data?.message);
+        return;
       }
+
+      sessionStorage.setItem("isLoggedIn", true);
+      sessionStorage.setItem("token", respone?.data?.token);
+      sessionStorage.setItem("userIF", JSON.stringify(respone?.data?.data));
+      sessionStorage.setItem("currentUser", JSON.stringify(respone?.data?.data));
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      setVisibleAlert(true);
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        t("loginFailed");
+      setAlertMessage(`${t("loginFailed")} (${message})`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,119 +130,162 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light position-relative">
-      <div style={{ position: "fixed", top: 24, right: 32, zIndex: 10 }}>
-        <div className="d-flex align-items-center gap-3">
+    <div className="hrm-login">
+      <div className="hrm-login__toolbar">
+        <div className="hrm-login__chip">
+          <CIcon icon={cilGlobeAlt} />
           <select
-            className="form-select form-select-sm w-auto"
-            style={{ minWidth: 110 }}
+            className="hrm-login__lang-select"
             value={i18n.language}
             onChange={handleChangeLanguage}
+            aria-label="Language"
           >
             <option value="en">{t("en")}</option>
             <option value="vi">{t("vi")}</option>
             <option value="jp">{t("jp")}</option>
             <option value="pt">{t("pt")}</option>
           </select>
-          <CFormSwitch
-            id="darkModeSwitchLogin"
-            label={
-              <span style={{ color: darkMode ? undefined : "#222" }}>
-                {darkMode ? t("darkModeOn") : t("darkModeOff")}
-              </span>
-            }
-            checked={darkMode}
-            onChange={() => setDarkMode((v) => !v)}
-            size="lg"
-          />
         </div>
+        <button
+          type="button"
+          className="hrm-login__chip hrm-login__theme-toggle"
+          onClick={() => setDarkMode((value) => !value)}
+        >
+          <span className={`hrm-login__theme-dot${darkMode ? " hrm-login__theme-dot--active" : ""}`} />
+          {darkMode ? t("darkModeOn") : t("darkModeOff")}
+        </button>
       </div>
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={6} lg={5} sm={12}>
-            <CCard className="shadow-lg border-0 rounded-4 p-4">
-              <CCardBody>
-                <div className="text-center mb-4">
-                  <img
-                    src={logo}
-                    alt="Logo"
-                    style={{ width: 80, marginBottom: 16 }}
-                  />
-                  <h2
-                    className="fw-bold mt-2 mb-1"
-                    style={{ color: "#1a7f37" }}
-                  >
-                    {t("hrmMetal")}
-                  </h2>
-                  <div className="text-muted mb-2">{t("loginSubtitle")}</div>
+
+      <div className="hrm-login__shell">
+        <aside className="hrm-login__brand">
+          <div className="hrm-login__brand-glow" />
+          <div className="hrm-login__brand-content">
+            <div className="hrm-login__brand-top">
+              <div className="hrm-login__logo">
+                <img src={logo} alt="HRM Metal" />
+              </div>
+              <div>
+                <strong>HRM Metal</strong>
+                <span>Industrial people operations</span>
+              </div>
+            </div>
+
+            <div className="hrm-login__headline">
+              <span className="hrm-login__eyebrow">Secure access</span>
+              <h1>Operate your workforce with clarity.</h1>
+              <p>
+                A sharper control room for attendance, schedules, people data
+                and production support — designed to feel modern from the first
+                screen.
+              </p>
+            </div>
+
+            <div className="hrm-login__highlights">
+              {HIGHLIGHTS.map((item) => (
+                <div className="hrm-login__highlight" key={item.titleKey}>
+                  <div className="hrm-login__highlight-icon">
+                    <CIcon icon={item.icon} />
+                  </div>
+                  <div>
+                    <strong>{t(item.titleKey)}</strong>
+                    <span>{t(item.textKey)}</span>
+                  </div>
                 </div>
-                <CAlert
-                  color="danger"
-                  dismissible
-                  visible={visibleAlert}
-                  onClose={() => setVisibleAlert(false)}
-                  className="py-2"
-                >
-                  {alertMessage}
-                </CAlert>
-                <CForm onSubmit={handleLogin}>
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">
-                      {t("login.usernameLabel")}
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text bg-white">
-                        <CIcon icon={cilUser} />
-                      </span>
-                      <CFormInput
-                        placeholder={t("login.usernamePlaceholder")}
-                        autoComplete="username"
-                        value={user_name}
-                        onChange={(e) => setUserName(e.target.value)}
-                        className={badUserName ? "is-invalid" : ""}
-                      />
-                      {badUserName && (
-                        <div className="invalid-feedback">{badUserName}</div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label fw-semibold">
-                      {t("login.passwordLabel")}
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text bg-white">
-                        <CIcon icon={cilLockLocked} />
-                      </span>
-                      <CFormInput
-                        type="password"
-                        placeholder={t("login.passwordPlaceholder")}
-                        autoComplete="current-password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={badPassword ? "is-invalid" : ""}
-                      />
-                      {badPassword && (
-                        <div className="invalid-feedback">{badPassword}</div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="d-grid mt-4">
-                    <CButton
-                      color="success"
-                      size="lg"
-                      type="submit"
-                      className="rounded-pill fw-bold shadow-sm"
-                    >
-                      {t("login.loginBtn")}
-                    </CButton>
-                  </div>
-                </CForm>
-              </CCardBody>
-            </CCard>
-          </CCol>
-        </CRow>
-      </CContainer>
+              ))}
+            </div>
+          </div>
+
+          <div className="hrm-login__brand-stats">
+            <div>
+              <strong>24/7</strong>
+              <span>Shift tracking</span>
+            </div>
+            <div>
+              <strong>4</strong>
+              <span>Languages</span>
+            </div>
+            <div>
+              <strong>+09</strong>
+              <span>Asia/Tokyo</span>
+            </div>
+          </div>
+        </aside>
+
+        <section className="hrm-login__panel">
+          <span className="hrm-login__eyebrow hrm-login__eyebrow--panel">
+            {t("login")} · HRM Metal
+          </span>
+          <h2 className="hrm-login__title">{t("login.loginBtn")}</h2>
+          <p className="hrm-login__subtitle">{t("loginSubtitle")}</p>
+
+          <CAlert
+            color="danger"
+            dismissible
+            visible={visibleAlert}
+            onClose={() => setVisibleAlert(false)}
+            className="hrm-login__alert"
+          >
+            {alertMessage}
+          </CAlert>
+
+          <CForm onSubmit={handleLogin} noValidate>
+            <div className="hrm-login__field">
+              <label className="hrm-login__label">{t("login.usernameLabel")}</label>
+              <div className={`hrm-login__input${badUserName ? " hrm-login__input--invalid" : ""}`}>
+                <CIcon icon={cilUser} />
+                <CFormInput
+                  placeholder={t("login.usernamePlaceholder")}
+                  autoComplete="username"
+                  value={user_name}
+                  onChange={(e) => setUserName(e.target.value)}
+                />
+              </div>
+              {badUserName && (
+                <span className="hrm-login__error">{badUserName}</span>
+              )}
+            </div>
+
+            <div className="hrm-login__field">
+              <label className="hrm-login__label">{t("login.passwordLabel")}</label>
+              <div className={`hrm-login__input${badPassword ? " hrm-login__input--invalid" : ""}`}>
+                <CIcon icon={cilLockLocked} />
+                <CFormInput
+                  type="password"
+                  placeholder={t("login.passwordPlaceholder")}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              {badPassword && (
+                <span className="hrm-login__error">{badPassword}</span>
+              )}
+            </div>
+
+            <CButton
+              color="success"
+              size="lg"
+              type="submit"
+              disabled={loading}
+              className="hrm-login__submit"
+            >
+              {loading ? (
+                <>
+                  <CSpinner size="sm" className="me-2" />
+                  {t("login.signingIn")}
+                </>
+              ) : (
+                t("login.loginBtn")
+              )}
+            </CButton>
+          </CForm>
+
+          <div className="hrm-login__footer">
+            <span>API</span>
+            <code>{LOGIN_ENDPOINT}</code>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

@@ -7,13 +7,15 @@ import {
 } from '@coreui/react';
 import axios from 'axios';
 import {
-  BASE_URL, PORT, API, VERSION, V1, EVENTS, GET_EVENTS_WITH_POSITION
+  buildApiUrl, EVENTS
 } from '../../constants';
 import CIcon from '@coreui/icons-react';
-import { cilCalendar, cilShieldAlt, cilStar, cilPlus, cilChevronBottom, cilChevronRight } from '@coreui/icons';
+import { cilPlus } from '@coreui/icons';
 import { useLocation } from 'react-router-dom';
+import { PermissionGuard } from '../../permissions/PermissionGuard';
+import PageHeader from '../../components/ui/PageHeader';
 
-const API_BASE = `${BASE_URL}${PORT}${API}${VERSION}${V1}${EVENTS}`;
+const API_BASE = buildApiUrl(EVENTS);
 
 const defaultForm = {
   name: '',
@@ -252,21 +254,20 @@ const AdminEventManagement = () => {
   return (
     <div className="bg-light min-vh-100 p-0">
       <div className="flex-grow-1 p-4">
-        {isSafetyPage || isNormalPage ? (
-          <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: 400 }}>
-            <div style={{ fontSize: 22, color: '#aaa', fontWeight: 600, letterSpacing: 1, padding: '48px 0' }}>
-              {t('feature_in_development') || 'Chức năng đang phát triển...'}
-            </div>
-          </div>
-        ) : (
-          <>
-            <CButton color="success" className="fw-bold mb-4 px-4 py-2 rounded-3 d-inline-flex align-items-center gap-2" onClick={() => setShowCreate(true)}>
-              <CIcon icon={cilPlus} /> {t('add')}
-            </CButton>
-            <h2 className="fw-bold mb-3" style={{ color: '#1a7f37' }}>{t('events')}</h2>
+        <>
+          <PageHeader
+              title={isSafetyPage ? t('eventsSafety') : isNormalPage ? t('eventsNormal') : t('events')}
+              actions={
+                <PermissionGuard permission="events.create">
+                  <CButton color="success" className="fw-bold mb-4 px-4 py-2 rounded-3 d-inline-flex align-items-center gap-2" onClick={() => setShowCreate(true)}>
+                    <CIcon icon={cilPlus} /> {t('add')}
+                  </CButton>
+                </PermissionGuard>
+              }
+            />
             <CCard className="shadow-sm rounded-4">
               <CCardHeader className="bg-white border-0 px-4 py-4 rounded-top-4 d-flex align-items-center justify-content-between">
-                <h5 className="fw-bold mb-0">{t('events')}</h5>
+                <h5 className="fw-bold mb-0">{isSafetyPage ? t('eventsSafety') : isNormalPage ? t('eventsNormal') : t('events')}</h5>
               </CCardHeader>
               <CCardBody>
                 {/* FILTER UI */}
@@ -322,12 +323,16 @@ const AdminEventManagement = () => {
                               <CButton size="sm" color="info" variant="outline" className="me-1" onClick={() => handleShowDetail(item.id)}>
                                 {t('view')}
                               </CButton>
-                              <CButton size="sm" color="warning" variant="outline" className="me-1" onClick={() => handleOpenUpdate(item)}>
-                                {t('update')}
-                              </CButton>
-                              <CButton size="sm" color="danger" variant="outline" onClick={() => setDeleteId(item.id)}>
-                                {t('delete')}
-                              </CButton>
+                              <PermissionGuard permission="events.update">
+                                <CButton size="sm" color="warning" variant="outline" className="me-1" onClick={() => handleOpenUpdate(item)}>
+                                  {t('update')}
+                                </CButton>
+                              </PermissionGuard>
+                              <PermissionGuard permission="events.delete">
+                                <CButton size="sm" color="danger" variant="outline" onClick={() => setDeleteId(item.id)}>
+                                  {t('delete')}
+                                </CButton>
+                              </PermissionGuard>
                             </CTableDataCell>
                           </CTableRow>
                         ))}
@@ -556,8 +561,7 @@ const AdminEventManagement = () => {
                 <CButton color="secondary" onClick={() => setAlert(a => ({ ...a, visible: false }))}>{t('cancel')}</CButton>
               </CModalFooter>
             </CModal>
-          </>
-        )}
+        </>
       </div>
     </div>
   );

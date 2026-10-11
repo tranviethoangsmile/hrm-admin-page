@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Unauthorized from "../views/pages/Unauthorized";
+import { ADMIN_ROLES } from "../constants/adminOptions";
 
 const DefaultLayout = () => {
   const navigate = useNavigate();
@@ -16,29 +17,31 @@ const DefaultLayout = () => {
   const isLoggedIn = sessionStorage.getItem("isLoggedIn");
   const userData = JSON.parse(sessionStorage.getItem("userIF"));
 
-  // Nếu là STAFF thì chỉ render Unauthorized, không render layout
-  if (userData?.role === "STAFF") {
-    return <Unauthorized />;
-  }
-
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/login");
     }
-  }, []);
+  }, [isLoggedIn, navigate]);
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
+  if (userData?.role && !ADMIN_ROLES.includes(userData.role)) {
+    return <Unauthorized />;
+  }
 
   return (
-    <div>
+    <div className="app-shell">
       <AppSidebar />
       <div
         className={`wrapper d-flex flex-column min-vh-100${unfoldable ? " wrapper-full" : ""}`}
-        style={unfoldable ? { paddingLeft: 0 } : {}}
       >
-        <AppHeader />
-        <div className="body flex-grow-1">
+        <div className="main-content-shell">
+          <AppHeader />
           <AppContent />
+          <AppFooter />
         </div>
-        <AppFooter />
       </div>
     </div>
   );

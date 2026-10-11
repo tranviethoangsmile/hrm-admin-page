@@ -1,0 +1,1 @@
+import{P as r}from"./index-CcZYHe_P.js";import{u as p,R as t}from"./DefaultLayout-9TxfpIuy.js";const a=({permission:o,fallback:e=null,children:s})=>{const{can:n,role:i}=p();return i===t.ADMIN||n(o)?s:e};a.propTypes={permission:r.string,fallback:r.node,children:r.node};export{a as P};

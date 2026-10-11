@@ -42,15 +42,8 @@ import {
 } from "@coreui/icons";
 import UserCreateModal from "../departments/UserCreateModal";
 import AppToast from "../../components/AppToast";
-import {
-  UPLOAD_AVATAR,
-  BASE_URL,
-  PORT,
-  API,
-  VERSION,
-  V1,
-  USER_URL,
-} from "../../constants";
+import { PermissionGuard } from "../../permissions/PermissionGuard";
+import { buildApiUrl, DEPARTMENT, GET_ALL, UPLOAD_AVATAR, USER_URL } from "../../constants";
 
 const statusBadge = (status, t) => {
   if (status === true || status === "active" || status === t("confirmed"))
@@ -137,7 +130,7 @@ const EmployeeManagement = () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
+          buildApiUrl(USER_URL)
         );
         setUsers(res.data?.data || []);
       } catch (e) {
@@ -148,7 +141,7 @@ const EmployeeManagement = () => {
     const fetchDepartments = async () => {
       try {
         const res = await axios.get(
-          `${BASE_URL}${PORT}${API}${VERSION}${V1}/department/getall`
+          buildApiUrl(DEPARTMENT, GET_ALL)
         );
         setDepartments(res.data?.data || []);
       } catch (e) {
@@ -222,7 +215,7 @@ const EmployeeManagement = () => {
     try {
       const { avatar, department, ...formData } = form;
       const res = await axios.put(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`,
+        buildApiUrl(USER_URL),
         formData,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -236,7 +229,7 @@ const EmployeeManagement = () => {
         return;
       }
       const usersRes = await axios.get(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
+        buildApiUrl(USER_URL)
       );
       setUsers(usersRes.data?.data || []);
       const found = (usersRes.data?.data || []).find((u) => u.id === form.id);
@@ -271,7 +264,7 @@ const EmployeeManagement = () => {
     setShowDeleteModal(false);
     try {
       await axios.delete(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}/${selectedUser.id}`
+        buildApiUrl(USER_URL, `/${selectedUser.id}`)
       );
       setUsers((users) => users.filter((u) => u.id !== selectedUser.id));
       setSelectedUser(null);
@@ -296,13 +289,13 @@ const EmployeeManagement = () => {
     formData.append("id", selectedUser.id);
     try {
       const res = await axios.post(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}${UPLOAD_AVATAR}`,
+        buildApiUrl(USER_URL, UPLOAD_AVATAR),
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
       if (res.data?.success) {
         const usersRes = await axios.get(
-          `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
+          buildApiUrl(USER_URL)
         );
         setUsers(usersRes.data?.data || []);
         const found = (usersRes.data?.data || []).find(
@@ -365,11 +358,8 @@ const EmployeeManagement = () => {
               <CBadge color="dark" className="mb-2 p-3">
                 <CIcon icon={cilUser} size="xl" />
               </CBadge>
-              <div className="fw-bold">Total Employee</div>
+              <div className="fw-bold">{t("totalEmployee") || "Total Employee"}</div>
               <div className="fs-2 fw-bolder">{totalEmployee}</div>
-              <CBadge color="light" textColor="primary">
-                +19.01%
-              </CBadge>
             </CCardBody>
           </CCard>
         </CCol>
@@ -379,11 +369,8 @@ const EmployeeManagement = () => {
               <CBadge color="success" className="mb-2 p-3">
                 <CIcon icon={cilUserFollow} size="xl" />
               </CBadge>
-              <div className="fw-bold">Active</div>
+              <div className="fw-bold">{t("activeEmployee") || "Active"}</div>
               <div className="fs-2 fw-bolder">{activeEmployee}</div>
-              <CBadge color="light" textColor="success">
-                +19.01%
-              </CBadge>
             </CCardBody>
           </CCard>
         </CCol>
@@ -393,11 +380,8 @@ const EmployeeManagement = () => {
               <CBadge color="danger" className="mb-2 p-3">
                 <CIcon icon={cilUserUnfollow} size="xl" />
               </CBadge>
-              <div className="fw-bold">Inactive</div>
+              <div className="fw-bold">{t("inactiveEmployee") || "Inactive"}</div>
               <div className="fs-2 fw-bolder">{inactiveEmployee}</div>
-              <CBadge color="light" textColor="danger">
-                +19.01%
-              </CBadge>
             </CCardBody>
           </CCard>
         </CCol>
@@ -407,21 +391,17 @@ const EmployeeManagement = () => {
               <CBadge color="info" className="mb-2 p-3">
                 <CIcon icon={cilUserPlus} size="xl" />
               </CBadge>
-              <div className="fw-bold">New Joiners</div>
+              <div className="fw-bold">{t("newJoiners") || "New Joiners"}</div>
               <div className="fs-2 fw-bolder">{newJoiners}</div>
-              <CBadge color="light" textColor="info">
-                +19.01%
-              </CBadge>
             </CCardBody>
           </CCard>
         </CCol>
         <CCol md={12} className="d-flex justify-content-end gap-2 mt-2">
-          <CButton color="secondary" variant="outline">
-            Export
-          </CButton>
-          <CButton color="warning" onClick={() => setShowCreateModal(true)}>
-            + Add Employee
-          </CButton>
+          <PermissionGuard permission="employees.create">
+            <CButton color="warning" onClick={() => setShowCreateModal(true)}>
+              + {t("addEmployee") || "Add Employee"}
+            </CButton>
+          </PermissionGuard>
         </CCol>
       </CRow>
       {/* MAIN CONTENT: TABLE + DETAIL PANEL */}
@@ -714,18 +694,22 @@ const EmployeeManagement = () => {
                 <div className="text-danger mt-2 mb-2 text-center">{error}</div>
               )}
               <div className="d-flex justify-content-end gap-2 mt-4">
-                <CButton
-                  color="danger"
-                  variant="outline"
-                  onClick={() => setShowDeleteModal(true)}
-                >
-                  <CIcon icon={cilTrash} className="me-2" />
-                  {t("delete")}
-                </CButton>
-                <CButton color="primary" onClick={handleEdit}>
-                  <CIcon icon={cilPencil} className="me-2" />
-                  {t("update")}
-                </CButton>
+                <PermissionGuard permission="employees.delete">
+                  <CButton
+                    color="danger"
+                    variant="outline"
+                    onClick={() => setShowDeleteModal(true)}
+                  >
+                    <CIcon icon={cilTrash} className="me-2" />
+                    {t("delete")}
+                  </CButton>
+                </PermissionGuard>
+                <PermissionGuard permission="employees.update">
+                  <CButton color="primary" onClick={handleEdit}>
+                    <CIcon icon={cilPencil} className="me-2" />
+                    {t("update")}
+                  </CButton>
+                </PermissionGuard>
               </div>
             </CCard>
           ) : (
@@ -744,7 +728,7 @@ const EmployeeManagement = () => {
         onCreated={async (createdUser) => {
           setShowCreateModal(false);
           const res = await axios.get(
-            `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`
+            buildApiUrl(USER_URL)
           );
           setUsers(res.data?.data || []);
           // Focus vào user vừa tạo

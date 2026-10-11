@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CAvatar,
-  CBadge,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -9,24 +8,19 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from "@coreui/react";
-import {
-  cilBell,
-  cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
-  cilLockLocked,
-  cilSettings,
-  cilTask,
-  cilUser,
-} from "@coreui/icons";
+import PropTypes from "prop-types";
+import { cilAccountLogout, cilLockLocked, cilSettings, cilUser } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
-import avatar from "../../../src/assets/images/avatars/avatar-empty.png";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+import avatar from "../../../src/assets/images/avatars/avatar-empty.png";
 
 const AppHeaderDropdown = ({ user }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [avata, setAvata] = useState("");
+
   useEffect(() => {
     setAvata(user?.avatar);
   }, [user]);
@@ -40,76 +34,42 @@ const AppHeaderDropdown = ({ user }) => {
     <CDropdown variant="nav-item">
       <CDropdownToggle
         placement="bottom-end"
-        className="py-0 pe-0"
+        className="modern-avatar-toggle py-0 pe-0"
         caret={false}
       >
-        <CAvatar src={avata ? avata : avatar} size="md" />
+        <CAvatar src={avata || avatar} size="md" />
       </CDropdownToggle>
-      <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">
-          {user?.name || "Account"}
+      <CDropdownMenu className="modern-dropdown" placement="bottom-end">
+        <CDropdownHeader className="modern-dropdown__header border-0">
+          <span className="modern-dropdown__title">{user?.name || "Account"}</span>
+          <span className="modern-dropdown__subtitle">
+            {user?.role || "Administrator"} {user?.position ? `• ${user.position}` : ""}
+          </span>
         </CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon icon={cilBell} className="me-2" />
-          Updates
-          <CBadge color="info" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilEnvelopeOpen} className="me-2" />
-          Messages
-          <CBadge color="success" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilTask} className="me-2" />
-          Tasks
-          <CBadge color="danger" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilCommentSquare} className="me-2" />
-          Comments
-          <CBadge color="warning" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownHeader className="bg-body-secondary fw-semibold my-2">
-          Settings
-        </CDropdownHeader>
-        <CDropdownItem href="#">
+        <CDropdownItem onClick={() => navigate("/employees")}>
           <CIcon icon={cilUser} className="me-2" />
-          Profile
+          {t("dropdown.profile") || "View profile"}
         </CDropdownItem>
-        <CDropdownItem href="#">
+        <CDropdownItem onClick={() => navigate("/settings")}>
           <CIcon icon={cilSettings} className="me-2" />
-          Settings
+          {t("dropdown.settings") || "Workspace settings"}
         </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilCreditCard} className="me-2" />
-          Payments
-          <CBadge color="secondary" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilFile} className="me-2" />
-          Projects
-          <CBadge color="primary" className="ms-2">
-            42
-          </CBadge>
+        <CDropdownItem onClick={() => navigate("/audit-logs")}>
+          <CIcon icon={cilLockLocked} className="me-2" />
+          {t("dropdown.security") || "Security access"}
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem onClick={handleLogout} style={{ color: "#e74c3c" }}>
-          <CIcon icon={cilLockLocked} className="me-2" />
-          Logout
+        <CDropdownItem onClick={handleLogout} style={{ color: "#b33939" }}>
+          <CIcon icon={cilAccountLogout} className="me-2" />
+          {t("dropdown.logout") || "Logout"}
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
   );
+};
+
+AppHeaderDropdown.propTypes = {
+  user: PropTypes.object,
 };
 
 export default AppHeaderDropdown;

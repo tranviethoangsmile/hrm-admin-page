@@ -16,15 +16,7 @@ import {
   CTableRow,
   CButton,
 } from "@coreui/react";
-import {
-  BASE_URL,
-  V1,
-  VERSION,
-  API,
-  PORT,
-  ORDER_URL,
-  SEARCH_ORDER_WITH_FIELD,
-} from "../../constants";
+import { buildApiUrl, ORDER_URL, SEARCH_ORDER_WITH_FIELD } from "../../constants";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -45,7 +37,7 @@ const MealManagement = () => {
         position: userData.position,
       };
       const response = await axios.post(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${ORDER_URL}${SEARCH_ORDER_WITH_FIELD}`,
+        buildApiUrl(ORDER_URL, SEARCH_ORDER_WITH_FIELD),
         field
       );
       if (response.data.success) {

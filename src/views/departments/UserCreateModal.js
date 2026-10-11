@@ -16,7 +16,7 @@ import {
   CButton,
 } from "@coreui/react";
 import AppToast from "../../components/AppToast";
-import { BASE_URL, PORT, API, VERSION, V1, USER_URL } from "../../constants";
+import { buildApiUrl, USER_URL } from "../../constants";
 
 const UserCreateModal = ({ visible, onClose, departmentList, onCreated }) => {
   const { t } = useTranslation();
@@ -109,7 +109,7 @@ const UserCreateModal = ({ visible, onClose, departmentList, onCreated }) => {
     setCreating(true);
     try {
       const res = await axios.post(
-        `${BASE_URL}${PORT}${API}${VERSION}${V1}${USER_URL}`,
+        buildApiUrl(USER_URL),
         form
       );
       setCreating(false);

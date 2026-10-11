@@ -14,70 +14,65 @@ import { AppSidebarNav } from "./AppSidebarNav";
 
 import logo from "../../public/logo-metal.png";
 // sidebar nav config
-import navigation from "../_nav";
+import navigation, { filterNavigation } from "../_nav";
+import { usePermissions } from "../hooks/usePermissions";
 
 const AppSidebar = () => {
   const dispatch = useDispatch();
   const unfoldable = useSelector((state) => state.sidebarUnfoldable);
   const sidebarShow = useSelector((state) => state.sidebarShow);
+  const { can } = usePermissions();
+
+  const filteredNavigation = React.useMemo(
+    () => filterNavigation(navigation, can),
+    [can]
+  );
 
   return (
     <CSidebar
-      className={`border-0 shadow-lg rounded-end-4 bg-white sidebar-modern${unfoldable ? " sidebar-narrow" : ""}`}
-      colorScheme="light"
+      className={`border-0 sidebar-modern${unfoldable ? " sidebar-narrow" : ""}`}
+      colorScheme="dark"
       position="fixed"
       unfoldable={unfoldable}
       visible={sidebarShow}
       style={{
         minHeight: "100vh",
-        width: unfoldable ? 72 : 260,
+        width: unfoldable ? 88 : 280,
         transition: "width 0.2s",
       }}
       onVisibleChange={(visible) => {
         dispatch({ type: "set", sidebarShow: visible });
       }}
     >
-      <CSidebarHeader className="border-0 bg-white d-flex align-items-center justify-content-center px-3 py-3 rounded-top-4">
-        <div
-          style={{
-            background: "linear-gradient(135deg, #1a7f37 0%, #157347 100%)",
-            borderRadius: 28,
-            boxShadow: "0 8px 32px rgba(26,127,55,0.18)",
-            padding: 18,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "3px solid #fff",
-            width: unfoldable ? 56 : 220,
-            height: unfoldable ? 56 : 120,
-            margin: "0 auto",
-            transition: "all 0.2s",
-          }}
-        >
-          <img
-            src={logo}
-            alt="Logo"
-            style={{
-              width: unfoldable ? 36 : 100,
-              height: unfoldable ? 36 : 100,
-              borderRadius: 18,
-              objectFit: "contain",
-              background: "transparent",
-              boxShadow: "0 2px 12px rgba(26,127,55,0.12)",
-              border: "none",
-              display: "block",
-              transition: "all 0.2s",
-            }}
-          />
+      <CSidebarHeader className="border-0 sidebar-header-modern">
+        <div className="sidebar-modern__brand">
+          <div className="sidebar-modern__brand-mark">
+            <img src={logo} alt="HRM Metal" />
+          </div>
+          <div className="sidebar-modern__brand-text">
+            <strong>HRM Metal</strong>
+            <span>Admin Control</span>
+          </div>
         </div>
         <CCloseButton
           className="d-lg-none"
-          dark
+          white
           onClick={() => dispatch({ type: "set", sidebarShow: false })}
         />
       </CSidebarHeader>
-      <AppSidebarNav items={navigation} />
-      <CSidebarFooter className="border-0 bg-white d-none d-lg-flex rounded-bottom-4 justify-content-center py-3">
+      <AppSidebarNav items={filteredNavigation} />
+      <div className="sidebar-modern__footer d-none d-lg-block">
+        {!unfoldable && (
+          <div className="sidebar-modern__summary">
+            <div>
+              <strong>Daily focus</strong>
+              <span>Keep operations steady</span>
+            </div>
+            <span>24/7</span>
+          </div>
+        )}
+      </div>
+      <CSidebarFooter className="border-0 d-none d-lg-flex justify-content-center sidebar-footer-modern py-3">
         <CSidebarToggler
           onClick={() =>
             dispatch({ type: "set", sidebarUnfoldable: !unfoldable })
